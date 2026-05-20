@@ -1,6 +1,6 @@
-# 🛠️ 彭威銘 (Yuseinsky) 's AI-Collaborative Automation Suite (AI協調型・業務自動化ツール集)
+# 🛠️ 彭威銘 (PENG WEIMING) 's AI-Collaborative Automation Suite (AI協調型・業務自動化ツール集)
 
-こんにちは、彭威銘 (Yuseinsky) の技術ポートフォリオへようこそ。
+こんにちは、彭威銘 (PENG WEIMING) の技術ポートフォリオへようこそ。
 本リポジトリは、日頃の業務における「手作業だと面倒な課題」を解決するため、**AIアシスタントとの協調開発（AI-Assisted Development）を通じて構築した7つの実践的自動化ツール群**をまとめたコードベースです。
 
 ---
@@ -43,9 +43,9 @@
 ---
 ---
 
-# 🛠️ Peng Weiming (Yuseinsky)'s AI-Collaborative Automation Suite
+# 🛠️ 彭威銘 (PENG WEIMING)'s AI-Collaborative Automation Suite
 
-Welcome to the technical portfolio of Peng Weiming (Yuseinsky).
+Welcome to the technical portfolio of 彭威銘 (PENG WEIMING).
 This repository compiles **7 practical tools developed through AI-collaborative engineering to automate tedious daily tasks and facilitate workflow efficiency** using Python, OS APIs, and AI integrations.
 
 ---
