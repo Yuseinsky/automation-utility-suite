@@ -1,6 +1,6 @@
-# 🛠️ ポンウェイミン's Automation Portfolio (自主開発ツール集)
+# 🛠️ Yuseinsky's Automation Portfolio (自主開発・業務自動化ツール集)
 
-こんにちは、ポンウェイミン (システムアーキテクト / エンジニア) の技術ポートフォリオへようこそ。
+こんにちは、Yuseinsky (Python / 業務自動化開発) の技術ポートフォリオへようこそ。
 本リポジトリは、日頃の業務やAIとの共同研究において直面した**「手作業だと面倒な課題」を、Python・OS API・AIを駆使して自動化した7つの実践的ツール群**をまとめたコードベースです。
 
 ---
@@ -43,9 +43,9 @@
 ---
 ---
 
-# 🛠️ Peng Weiming's Automation Portfolio (Self-Developed Toolsets)
+# 🛠️ Yuseinsky's Automation Portfolio (Self-Developed Automation Tools)
 
-Welcome to the technical portfolio of Peng Weiming (Systems Architect / Engineer).
+Welcome to the technical portfolio of Yuseinsky (Python / Automation Developer).
 This repository compiles **7 practical tools developed to automate tedious daily tasks and facilitate AI collaboration studies** using Python, OS APIs, and AI integrations.
 
 ---
