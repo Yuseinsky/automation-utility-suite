@@ -1,7 +1,7 @@
 # 🛠️ 彭威銘 (PENG WEIMING) 's AI-Collaborative Automation Suite (AI協調型・業務自動化ツール集)
 
 こんにちは、彭威銘 (PENG WEIMING) の技術ポートフォリオへようこそ。
-本リポジトリは、日頃の業務における「手作業だと面倒な課題」を解決するため、**AIアシスタントとの協調開発（AI-Assisted Development）を通じて構築した7つの実践的自動化ツール群**をまとめたコードベースです。
+本リポジトリは、日頃の業務における「手作業だと面倒な課題」を解決するため、**AIアシスタントとの協調開発（AI-Assisted Development）を通じて構築した8つの実践的自動化ツール群**をまとめたコードベースです。
 
 ---
 
@@ -16,6 +16,7 @@
 | [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
 | [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能多模態対話エージェント** | discord.py, Gemini API (マルチモーダル) | 人格（ペルソナ）フィルタ、短期記憶結晶化、察言観色バックログ搭載のBot |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム** | Python, SQLite, argparse | IDEアーキテクチャ変更で失われたAI対話脈絡をデータベースから抽出し復旧する防御的ツール |
 
 ---
 
@@ -46,7 +47,7 @@
 # 🛠️ 彭威銘 (PENG WEIMING)'s AI-Collaborative Automation Suite
 
 Welcome to the technical portfolio of 彭威銘 (PENG WEIMING).
-This repository compiles **7 practical tools developed through AI-collaborative engineering to automate tedious daily tasks and facilitate workflow efficiency** using Python, OS APIs, and AI integrations.
+This repository compiles **8 practical tools developed through AI-collaborative engineering to automate tedious daily tasks and facilitate workflow efficiency** using Python, OS APIs, and AI integrations.
 
 ---
 
@@ -61,6 +62,7 @@ This repository compiles **7 practical tools developed through AI-collaborative 
 | [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
 | [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery** | Python, SQLite, argparse | Recovers and injects lost AI conversation contexts caused by IDE storage architecture shifts. |
 
 ---
 
