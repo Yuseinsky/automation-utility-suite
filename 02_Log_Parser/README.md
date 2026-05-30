@@ -12,7 +12,7 @@ Raw web logs often contain redundant UI tags and inconsistent speaker formatting
 
 ### ✨ Core Features
 - **Zero Hardcoding**: Speaker names and parsing rules are defined entirely in `parser_config.yaml`. The script itself contains no hardcoded names.
-- **Visual Reformatting**: Consolidates messy, multi-line speaker tags (e.g., `System \n said`) into clean Markdown headers (e.g., `### 💬 System`).
+- **Visual Reformatting**: Consolidates messy, multi-line speaker tags (e.g., `AI Assistant \n said`) into clean Markdown headers (e.g., `### 💬 AI Assistant`).
 - **Junk Line Stripping**: Automatically removes residual UI noise (e.g., "Custom Gem") generated during web copying.
 - **Auto Summary Report**: Automatically injects a statistical block at the top of the output file, detailing total lines, speaker switch counts, and the participant list.
 - **Safe I/O**: Original files are never modified. The script reads the input and saves the result as a new file.
@@ -46,7 +46,7 @@ Gemini や Claude などの Web 画面から会話ログをコピーすると、
 
 ### ✨ 主な機能 (Features)
 - **ゼロ・ハードコーディング**: 名前や判定ルールはすべて `parser_config.yaml` で定義され、スクリプト本体には特定の人名が含まれません。
-- **タグの視覚的フォーマット**: 複数行にまたがる乱雑な発言者タグを、きれいな Markdown 見出し（例: `### 💬 発言者`）に統合します。
+- **タグの視覚的フォーマット**: 複数行にまたがる乱雑な発言者タグ（例: `AI アシスタント \n said`）を、きれいな Markdown 見出し（例: `### 💬 AI アシスタント`）に統合します。
 - **不要な行のフィルタリング**: コピー時に混入した UI のノイズ（例: 「カスタム Gem」）を自動的に削除します。
 - **自動サマリーレポート**: 出力ファイルの先頭に、「総行数」「発言者の切り替え回数」「参加者リスト」を含む統計データを自動挿入します。
 - **安全なファイル操作**: 元のファイルは一切変更されません。読み込んだ後、新しいファイルとして保存されます。
@@ -81,7 +81,7 @@ Log Parser 是一個專為「擷取自網頁版 AI 對話紀錄」所設計的 P
 
 ### ✨ 核心功能 (Features)
 - **零硬編碼 (Zero Hardcoding)**：人名與判斷規則完全交由 `parser_config.yaml` 定義，腳本本身不包含任何特定人名。
-- **標籤美化 (Visual Reformatting)**：將原本佔據多行、雜亂無章的發言者標記（如 `花宮 朱音 💮 \n said`）整併為乾淨的 Markdown 標題（例如 `### 💬 花宮 朱音 💮`）。
+- **標籤美化 (Visual Reformatting)**：將原本佔據多行、雜亂無章的發言者標記（如 `AI 助手 \n said`）整併為乾淨的 Markdown 標題（例如 `### 💬 AI 助手`）。
 - **垃圾行過濾 (Junk Line Stripping)**：自動清除網頁複製時殘留的 UI 雜訊（例如「自訂 Gem」）。
 - **自動摘要報告 (Auto Summary)**：在輸出的檔案最頂部，自動注入包含「總行數」、「發言者切換次數」、「參與者列表」的統計數據。
 - **無損寫入 (Safe I/O)**：絕對不修改原始檔案，所有操作皆為讀取後另存新檔。
@@ -91,7 +91,7 @@ Log Parser 是一個專為「擷取自網頁版 AI 對話紀錄」所設計的 P
 
 本腳本的底層運作邏輯為 **Regex (正規表示式)**，它是一台「只認格式、不看內文」的機器。因此在處理自然語言對話時，存在以下無法避免的物理限制：
 
-1. **沒有語意理解能力 (No Semantic AI)**：本腳本**無法閱讀空氣與上下文**。如果發言者在內文中自我介紹「我是啓邦」，但他的發言標籤依然是系統預設的「你說了」，腳本**絕對無法**自動將標籤替換為「啓邦」。它只能忠實地印出「你說了」。*(解法：若需語意級別的判斷，必須升級為呼叫 LLM API 的 V3 架構，但這會帶來極高的 Token 成本與幻覺風險。)*
+1. **沒有語意理解能力 (No Semantic AI)**：本腳本**無法閱讀空氣與上下文**。如果發言者在內文中自我介紹「我是 Bob」，但他的發言標籤依然是系統預設的「你說了」，腳本**絕對無法**自動將標籤替換為「Bob」。它只能忠實地印出「你說了」。*(解法：若需語意級別的判斷，必須升級為呼叫 LLM API 的 V3 架構，但這會帶來極高的 Token 成本與幻覺風險。)*
 2. **多人共用標籤的「連坐誤判」 (The 1-to-N Tag Problem)**：在現實場景中，如果多個物理使用者（例如 A 把手機遞給 B）共用同一個帳號對話，網頁吐出的標籤只會有一個（例如 `你說了`）。腳本無法分辨「這句話是 A 說的，下一句話是 B 說的」。它會將該標籤下的所有文字歸類給同一個發言者。這需要人工在原始 Log 中介入分割。
 3. **開頭無標籤問題 (Missing First-Line Header)**：若複製的 Log 檔案最開頭的第一句話沒有附帶任何發言者標籤，腳本會嚴格地將其歸類為 `[Unknown Speaker]`。
 
