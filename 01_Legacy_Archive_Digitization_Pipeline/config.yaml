@@ -1,0 +1,116 @@
+# ============================================================
+# Legacy Archive Digitization Pipeline - Configuration
+# ============================================================
+# All values previously hardcoded across 3 scripts are now
+# centralized here. Modify this file to adapt the pipeline
+# for different archive projects without touching any code.
+# ============================================================
+
+# === Image Mapping Settings ===
+# (Originally hardcoded in organize_archive.py L19, L33-35, L38)
+image_mapping:
+  # Regex to extract page numbers and raw image numbers from MD files
+  # Captures: group(1) = page_number, group(2) = raw_image_number
+  page_regex: '頁碼：([0-9\-\w]+)\s*\([^\d]*原圖\s*(\d+)[^\d]*\)'
+
+  # LINE album filename prefixes to search for source images
+  source_prefixes:
+    - "LINE_ALBUM_魚の感覚_260327_"
+    - "LINE_ALBUM_魚の感覚_260328_"
+
+  # Output filename prefix for renamed images
+  output_prefix: "Fish_Senses_Page_"
+
+  # Source image file extension
+  extension: ".jpg"
+
+# === File Gathering Settings ===
+# (Originally hardcoded in organize_archive.py L15-16, L54)
+file_patterns:
+  # Glob pattern for main translation markdown files
+  main_text: "[0-1][0-9]_*.md"
+
+  # Glob pattern for reading notes files
+  reading_notes: "100_Reading_Notes_Part*.md"
+
+  # Files to exclude from consolidation
+  exclude:
+    - "00_Test_Parsing_Result.md"
+    - "00_Project_Progress.md"
+
+# === Layout Sorting Weights ===
+# (Originally hardcoded in polish_archive.py L10-17, L26)
+# Lower numbers appear first in the final document.
+# Numeric pages are sorted by their actual page number.
+layout_weights:
+  封面: -100
+  扉頁: -100
+  莊子: -90
+  序: -80
+  目錄: -70
+  無頁碼: 1000
+  奧付: 1000
+  版權: 1001
+  _fallback: 500    # Weight for unrecognized page headers
+
+# === Page Header Marker ===
+# (Originally hardcoded in polish_archive.py L35)
+page_header_marker: "## 📖 頁碼："
+
+# === Text Cleaning Rules ===
+# (Originally scattered across polish_archive.py L51-57 and
+#  polish_archive_pass_2.py L12-26)
+# Rules are applied in order. Each rule has:
+#   - pattern: Python regex pattern string
+#   - replacement: (optional) replacement string, defaults to ""
+#   - flags: (optional) "MULTILINE" or "DOTALL"
+#   - desc: Human-readable description for logging
+cleaning_rules:
+  # --- From polish_archive.py ---
+  - pattern: '（接.*?頁）[…\.\-]*'
+    desc: "Remove 'continued from page XX' transition markers"
+
+  - pattern: '\.\.\.+力了」'
+    replacement: '力了」'
+    desc: "Remove leading ellipsis before specific sentence ending"
+
+  - pattern: '---\s*\n\s*\*\*\(本章結束，換章\)\*\*\s*\n\s*---'
+    desc: "Remove chapter boundary markers"
+
+  # --- From polish_archive_pass_2.py ---
+  - pattern: '（接.*?）[：:……\.\-]*'
+    desc: "Remove continuation markers (e.g. 接自第1頁最後)"
+
+  - pattern: '（註：從前後文推測.*?）\s*\n?'
+    desc: "Remove translator inference notes"
+
+  - pattern: '（註解：缺漏.*?）\s*\n?'
+    desc: "Remove missing-text annotation notes"
+
+  # ⚠️ FIXED: Original pass_2.py L20 used r'^[\s：:……\.\-]*' which
+  # would strip leading whitespace and dashes, destroying Markdown
+  # lists (- item) and indented blocks. Now limited to colons only.
+  - pattern: '^[：:]{1}[……\.\-]*'
+    flags: MULTILINE
+    desc: "Remove leading colon+ellipsis at line start (safe version)"
+
+  - pattern: '<!-- ====== .*? ====== -->.*?---\s*\n'
+    flags: DOTALL
+    desc: "Remove batch separator blocks and their headers"
+
+  - pattern: '\n{3,}'
+    replacement: '\n\n'
+    desc: "Compress consecutive empty lines"
+
+# === Output Settings ===
+output:
+  # Final archive filename
+  archive: "Fish_Senses_Perfect_Archive.md"
+  # Reading notes filename
+  reading_notes: "Reading_Notes_Complete.md"
+  # Archive title header
+  archive_title: "# 🐟《魚の感覚》全譯本完美打磨版 (照實體頁碼排序無縫版)"
+  archive_subtitle: "> **修復：デジタルアーカイブ修復プログラム**"
+  # Reading notes title header
+  notes_title: "# 🐟《魚の感覚》科学解説と考察ノート"
+  notes_subtitle: "> 翻訳の過程で蓄積された専門用語、魚類生理学の科学解説と考察ノートです。"
