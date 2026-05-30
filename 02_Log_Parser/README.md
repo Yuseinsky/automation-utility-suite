@@ -1,74 +1,63 @@
-# 📝 非構造化対話ログ解析・ペルソナ自動タグ付けツール (Log Parser)
+# Log Parser V2.1 (AI Conversation Formatting Tool)
 
-## 📌 プロジェクト概要
-LLM（大規模言語モデル）との膨大かつ無構造な対話テキストログ（数万字〜数百万字）から、発言者およびAIの動的なペルソナ（人格・役割）変化を自動で判別し、構造化されたMarkdown形式へ再構築するテキスト解析＆メタデータ注入ツールです。
+## 📖 專案簡介 (Overview)
+Log Parser 是一個專為「擷取自網頁版 AI 對話紀錄」所設計的 Python 解析工具。
+當我們從網頁 (如 Gemini, Claude, NotebookLM 等) 複製對話紀錄時，往往會混入大量冗餘的 UI 標籤、不一致的發言者格式，導致閱讀困難。
 
-AIとの継続的なディスカッションにおいて、AI側の人格表現や役割が時間の経過や文脈によって変遷するケースに対応するため、時間軸（行数インデックス）に基づいた区間判定アルゴリズムを導入しています。
-
----
-
-## 🛠️ 技術スタック
-- **Language**: Python 3
-- **Libraries**: Built-in library (`os`, `sys`)
-- **Key Algorithms**: 行数インデックススライス、2次元配列区間判定マッピング
+本腳本透過**外置的 YAML 正規表示式 (Regex) 規則**，在「零寫死人名」的絕對安全前提下，自動掃描對話紀錄，洗去垃圾字元，並將其重新排版為極度乾淨、帶有自動目錄與統計的 Markdown 檔案。
 
 ---
 
-## ⚙️ 動作メカニズム
-
-1. **インプット**:
-   無構造なMarkdown形式の対話ログ（発言者ヘッダーが欠落している、あるいは曖昧なプレーンテキスト）。
-2. **区間判定 (Range Matching)**:
-   ユーザーの発言行（`user_ranges`）と、AIのペルソナ名が定義された行範囲（`ai_persona_ranges`）の定義を参照し、行ごとに発言者を特定します。
-   - 例: 行番号 3〜143 までは `**【Assistant (Base)】**：`
-   - 例: 行番号 228〜343 までは `**【Assistant (Specialized - Expert)】**：`
-3. **動的ヘッダー注入**:
-   行をスキャンし、発言者が切り替わるタイミングで自動的にMarkdownヘッダー（例: `**User**：`）を動的挿入。
-4. **アウトプット**:
-   発言者が一目で分かり、役割の変化がラベリングされた構造的なMarkdownファイルを上書き・出力します。
+## ✨ 核心功能 (Features)
+- **零硬編碼 (Zero Hardcoding)**：人名與判斷規則完全交由 `parser_config.yaml` 定義，腳本本身不包含任何特定人名。
+- **標籤美化 (Visual Reformatting)**：將原本佔據多行、雜亂無章的發言者標記（如 `花宮 朱音 💮 \n said`）整併為乾淨的 Markdown 標題（例如 `### 💬 花宮 朱音 💮`）。
+- **垃圾行過濾 (Junk Line Stripping)**：自動清除網頁複製時殘留的 UI 雜訊（例如「自訂 Gem」）。
+- **自動摘要報告 (Auto Summary)**：在輸出的檔案最頂部，自動注入包含「總行數」、「發言者切換次數」、「參與者列表」的統計數據。
+- **無損寫入 (Safe I/O)**：絕對不修改原始檔案，所有操作皆為讀取後另存新檔。
 
 ---
 
-## 💡 設計思想
-このプロジェクトの真価は、コードの複雑さではなく**「手動で行うとミスが多く時間のかかる『テキスト意味解析・ラベリング作業』を、構造化されたデータ（二次元配列）の判定ロジックに置き換え、自動化した点」**にあります。
-システム設計者としての「課題のパターンを見つけ、自動化ロジックに変換して効率化する」という問題解決アプローチを体現したツールです。
+## ⚠️ 已知缺陷與技術限制 (Known Limitations - 必讀)
+> **"Honesty is the best policy. 不畫大餅，認清工具的極限。"**
 
-<br>
-<br>
+本腳本的底層運作邏輯為 **Regex (正規表示式)**，它是一台「只認格式、不看內文」的機器。因此在處理自然語言對話時，存在以下無法避免的物理限制：
 
----
----
+### 1. 沒有語意理解能力 (No Semantic AI)
+本腳本**無法閱讀空氣與上下文**。
+如果發言者在內文中自我介紹「我是啓邦」，但他的發言標籤依然是系統預設的「你說了」，腳本**絕對無法**自動將標籤替換為「啓邦」。它只能忠實地印出「你說了」。
+*解法：若需語意級別的判斷，必須升級為呼叫 LLM API 的 V3 架構，但這會帶來極高的 Token 成本與幻覺風險。*
 
-# 📝 Unstructured Log Parsing & Persona Auto-Tagging Tool (Log Parser)
+### 2. 多人共用標籤的「連坐誤判」 (The 1-to-N Tag Problem)
+在現實場景中，如果多個物理使用者（例如 A 把手機遞給 B）共用同一個帳號對話，網頁吐出的標籤只會有一個（例如 `你說了`）。
+腳本無法分辨「這句話是 A 說的，下一句話是 B 說的」。它會將該標籤下的所有文字歸類給同一個發言者。這需要人工在原始 Log 中介入分割。
 
-## 📌 Project Overview
-A text parser and metadata injection tool designed to analyze massive, unstructured conversation logs (ranging from tens of thousands to millions of characters) with LLMs. It automatically detects speaker transitions and dynamic AI persona (role) changes, rendering them into a structured, readable Markdown format.
-
-In long-running discussions with AI models, their personas or target roles often shift depending on the context. This script addresses this by using a line-index interval mapping algorithm to identify who said what.
-
----
-
-## 🛠️ Tech Stack
-- **Language**: Python 3
-- **Libraries**: Built-in modules (`os`, `sys`)
-- **Core Algorithms**: Line-index array matching, 2D interval mapping.
+### 3. 開頭無標籤問題 (Missing First-Line Header)
+若複製的 Log 檔案最開頭的第一句話沒有附帶任何發言者標籤，腳本會嚴格地將其歸類為 `[Unknown Speaker]`。
 
 ---
 
-## ⚙️ Operating Mechanism
+## 🚀 快速開始 (Quick Start)
 
-1. **Input**:
-   Unstructured Markdown dialogue logs (where speaker tags are missing or ambiguous).
-2. **Interval Matching (Range Matching)**:
-   Scans lines based on defined line number ranges for the User (`user_ranges`) and the AI (`ai_persona_ranges`), automatically matching each line to the corresponding active role.
-   - Example: Lines 3 to 143 map to `**[Assistant (Base)]**: `
-   - Example: Lines 228 to 343 map to `**[Assistant (Specialized - Expert)]**: `
-3. **Dynamic Header Injection**:
-   As it processes the lines, it injects speaker headers (e.g. `**User**: ` or persona titles) at speaker transition boundaries.
-4. **Output**:
-   Overwrites the input file with a fully-formatted Markdown log where roles and dialogue changes are clearly tagged.
+### 1. 安裝依賴
+```bash
+pip install pyyaml
+```
 
----
+### 2. 設定 YAML 規則
+編輯 `parser_config.yaml`：
+```yaml
+speaker_pattern: '^(?P<name>你說了|.+? said)$'  # 你的 Regex 規則
+reformat:
+  enabled: true
+  header_template: "### 💬 {name}"
+ignore_lines:
+  patterns:
+    - '^自訂 Gem$'
+summary:
+  enabled: true
+```
 
-## 💡 Engineering Rationale
-The value of this script lies in **abstracting a time-consuming, error-prone manual labeling process into a clean, structured programmatic interval check**. It represents the classic system engineering methodology: identifying repeating manual patterns, formalizing them into a structured data format (2D range arrays), and delegating the execution to automated scripting.
+### 3. 執行解析
+```bash
+python log_parser_v2.py chat_log.md --output result.md
+```

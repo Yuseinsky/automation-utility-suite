@@ -1,0 +1,70 @@
+# =============================================================================
+# Log Parser V2 — Speaker Pattern Configuration
+# =============================================================================
+# This file defines the rules for detecting speaker changes in conversation logs.
+# Modify the regex patterns below to match your specific log format.
+# No personal names are hardcoded — only format rules.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# speaker_pattern:
+#   A regex pattern that matches lines indicating a speaker change.
+#   The pattern should contain a capture group (?P<name>...) to extract
+#   the speaker's display name from the matched line.
+#
+# Examples of supported formats:
+#   **SomeName**：       → Markdown bold with full-width colon
+#   **SomeName**:        → Markdown bold with half-width colon
+#   **【SomeName】**：   → Markdown bold with bracket-wrapped name
+# -----------------------------------------------------------------------------
+speaker_pattern: '^\*\*(?P<name>.+?)\*\*\s*[：:]'
+
+# -----------------------------------------------------------------------------
+# output:
+#   suffix: Appended to the original filename for the processed output.
+#           e.g., "chat_log.md" → "chat_log_processed.md"
+#   directory: Output folder name (created relative to the script location).
+#              Leave empty to output next to the input file.
+# -----------------------------------------------------------------------------
+output:
+  suffix: "_processed"
+  directory: "output"
+
+# -----------------------------------------------------------------------------
+# error_handling:
+#   strategy: "continue" (mark unknown lines and keep going)
+#             or "strict" (halt on first unmatched speaker block)
+#   unknown_label: Label used for lines that cannot be matched.
+# -----------------------------------------------------------------------------
+error_handling:
+  strategy: "continue"
+  unknown_label: "[Unknown Speaker]"
+
+# -----------------------------------------------------------------------------
+# reformat:
+#   enabled: true/false — Enable speaker header beautification.
+#   header_template: Markdown heading format. Use {name} as placeholder.
+#   remove_original_header: true = replace the original line with the template.
+# -----------------------------------------------------------------------------
+reformat:
+  enabled: true
+  header_template: "### 💬 {name}"
+  remove_original_header: true
+
+# -----------------------------------------------------------------------------
+# ignore_lines:
+#   patterns: Regex patterns. Matched lines are removed from output entirely.
+#             Used to strip web-copy artifacts (e.g., "自訂 Gem").
+#             Set to [] to disable.
+# -----------------------------------------------------------------------------
+ignore_lines:
+  patterns: []
+
+# -----------------------------------------------------------------------------
+# summary:
+#   enabled: true/false — Insert a parsed summary block at the top of output.
+#   title: The heading text for the summary block.
+# -----------------------------------------------------------------------------
+summary:
+  enabled: true
+  title: "📊 Log Parser 解析報告"
