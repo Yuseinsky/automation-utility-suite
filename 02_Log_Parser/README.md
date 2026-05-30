@@ -31,7 +31,10 @@ The underlying logic of this script relies on **Regex**, making it a tool that s
 # 1. Install dependencies
 pip install pyyaml
 
-# 2. Run parser
+# 2. Configure YAML rules
+# Please edit parser_config.yaml to set your regex and replacement rules
+
+# 3. Run parser
 python log_parser_v2.py chat_log.md --output result.md
 ```
 
@@ -65,7 +68,10 @@ Web 画面（ChatGPT、Claude、Gemini など）から会話ログをコピー�
 # 1. 依存関係のインストール
 pip install pyyaml
 
-# 2. 実行
+# 2. YAML ルールの設定
+# parser_config.yaml を編集し、正規表現や置換ルールを設定してください
+
+# 3. 実行
 python log_parser_v2.py chat_log.md --output result.md
 ```
 
