@@ -165,8 +165,8 @@ class DialogueLogger:
 
         print(f"[LOG] seq {seq} recorded for session '{session_id}'.")
 
-        # Auto-flush check
-        if seq % self.auto_flush_threshold == 0:
+        # Auto-flush check (threshold=0 disables auto-export)
+        if self.auto_flush_threshold > 0 and seq % self.auto_flush_threshold == 0:
             print(
                 f"[AUTO-FLUSH] Threshold ({self.auto_flush_threshold}) reached. "
                 f"Exporting Markdown..."
