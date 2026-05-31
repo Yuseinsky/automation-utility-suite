@@ -17,6 +17,7 @@ Usage:
 """
 import sqlite3
 import os
+import re
 from datetime import datetime
 
 # ---------------------------------------------------------------------------
@@ -61,7 +62,7 @@ class DialogueLogger:
         self.auto_flush_threshold = auto_flush_threshold
         self.log_dir = log_dir
         
-        self._session_counters = {}
+        self._session_counters: dict[str, int] = {}
 
         self._init_db()
 
@@ -70,8 +71,8 @@ class DialogueLogger:
     # ------------------------------------------------------------------
 
     def _init_db(self) -> None:
-        """Create the dialogues table if it does not exist."""
-        conn = sqlite3.connect(self.db_path)
+        """Create the dialogues table and index if they do not exist."""
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS dialogues (
@@ -85,12 +86,16 @@ class DialogueLogger:
             )
             """
         )
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_session "
+            "ON dialogues(session_id)"
+        )
         conn.commit()
         conn.close()
 
     def _get_session_count(self, session_id: str) -> int:
         """Return the number of exchange-pairs already stored for a session."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
         cursor = conn.execute(
             "SELECT COUNT(*) FROM dialogues "
             "WHERE session_id = ? AND speaker = 'User'",
@@ -128,25 +133,23 @@ class DialogueLogger:
         """
         if session_id not in self._session_counters:
             self._session_counters[session_id] = self._get_session_count(session_id)
-            
-        self._session_counters[session_id] += 1
-        seq = self._session_counters[session_id]
-        
+
+        pending_seq = self._session_counters[session_id] + 1
         ts = datetime.now().astimezone().isoformat()
 
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
         try:
             conn.execute(
                 "INSERT INTO dialogues "
                 "(session_id, seq_number, timestamp, engine, speaker, content) "
                 "VALUES (?, ?, ?, ?, ?, ?)",
-                (session_id, seq, ts, engine, "User", user_text),
+                (session_id, pending_seq, ts, engine, "User", user_text),
             )
             conn.execute(
                 "INSERT INTO dialogues "
                 "(session_id, seq_number, timestamp, engine, speaker, content) "
                 "VALUES (?, ?, ?, ?, ?, ?)",
-                (session_id, seq, ts, engine, "Assistant", assistant_text),
+                (session_id, pending_seq, ts, engine, "Assistant", assistant_text),
             )
             conn.commit()
         except Exception:
@@ -154,6 +157,11 @@ class DialogueLogger:
             raise
         finally:
             conn.close()
+
+        # Only update the in-memory counter AFTER a successful commit,
+        # preventing counter desync on rollback.
+        self._session_counters[session_id] = pending_seq
+        seq = pending_seq
 
         print(f"[LOG] seq {seq} recorded for session '{session_id}'.")
 
@@ -183,7 +191,7 @@ class DialogueLogger:
         Returns:
             The absolute path to the generated Markdown file.
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
         rows = conn.execute(
             "SELECT seq_number, timestamp, engine, speaker, content "
             "FROM dialogues WHERE session_id = ? ORDER BY id",
@@ -225,7 +233,7 @@ class DialogueLogger:
         month_dir = os.path.join(self.log_dir, now.strftime("%Y-%m"))
         os.makedirs(month_dir, exist_ok=True)
 
-        safe_id = session_id[:30].replace(" ", "_")
+        safe_id = re.sub(r'[^A-Za-z0-9_\-]', '_', session_id[:30])
         filename = f"Log_{now.strftime('%Y%m%d_%H%M')}_{safe_id}.md"
         output_path = os.path.join(month_dir, filename)
 
@@ -233,6 +241,11 @@ class DialogueLogger:
             f.write("\n".join(lines))
 
         print(f"[EXPORT] Markdown saved to: {output_path}")
+
+        # Release the in-memory counter to prevent state bloat
+        # in long-running daemon processes.
+        self._session_counters.pop(session_id, None)
+
         return os.path.abspath(output_path)
 
     # ------------------------------------------------------------------
@@ -248,7 +261,7 @@ class DialogueLogger:
         Returns:
             A list of dicts with keys: seq, timestamp, engine, speaker, content.
         """
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=15.0)
         rows = conn.execute(
             "SELECT seq_number, timestamp, engine, speaker, content "
             "FROM dialogues WHERE session_id = ? ORDER BY id",

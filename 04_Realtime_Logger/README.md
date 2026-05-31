@@ -48,7 +48,7 @@ logger.export_to_markdown("session_001")
 ```
 
 ### ⚠️ 既知の制限事項 (Known Limitations)
-1. **単一プロセス設計**: SQLite は同時書き込み（Write-Ahead Logging 非使用時）に制約があるため、複数プロセスからの同時書き込みには対応していません。
+1. **単一プロセス主体設計**: SQLite は同時書き込みに制約がありますが、接続タイムアウト (15秒) を設定済みのため、基本的な競合耐性を備えています。大規模な同時書き込みには WAL モード等の追加設定が必要です。
 2. **ローカル専用**: クラウドデータベース（PostgreSQL 等）との統合は本フレームワークのスコープ外です。
 
 <br>
@@ -107,7 +107,7 @@ logger.export_to_markdown("session_001")
 ```
 
 ### ⚠️ Known Limitations
-1. **Single-process design**: SQLite has write concurrency constraints (without WAL mode), so simultaneous writes from multiple processes are not supported.
+1. **Single-process primary design**: SQLite has write concurrency constraints, but a connection timeout (15s) is configured for basic contention tolerance. Large-scale concurrent writes may require WAL mode or additional configuration.
 2. **Local-only**: Integration with cloud databases (PostgreSQL, etc.) is outside the scope of this framework.
 
 <br>
@@ -166,5 +166,5 @@ logger.export_to_markdown("session_001")
 ```
 
 ### ⚠️ 已知限制 (Known Limitations)
-1. **單一進程設計**：SQLite 在未啟用 WAL 模式時，不支援多進程同時寫入。
+1. **以單一進程為主的設計**：SQLite 在同時寫入方面有其限制，但已設定連線超時 (15 秒) 以提供基本的競爭容錯能力。大規模併發寫入可能需要啟用 WAL 模式或額外設定。
 2. **僅限本地端**：與雲端資料庫（PostgreSQL 等）的整合不在本框架的範圍內。

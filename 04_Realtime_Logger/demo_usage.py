@@ -7,13 +7,20 @@ into any AI application — from Discord Bots to custom LLM pipelines.
 Run:
     python demo_usage.py
 """
+import os
 from universal_logger import DialogueLogger
+
+DEMO_DB = "demo_memory.db"
 
 
 def main():
+    # Clean up previous demo artifacts for a fresh, repeatable demo
+    if os.path.exists(DEMO_DB):
+        os.remove(DEMO_DB)
+
     # 1. Initialize the logger (auto-creates DB if not exists)
     logger = DialogueLogger(
-        db_path="demo_memory.db",
+        db_path=DEMO_DB,
         auto_flush_threshold=5,   # Export Markdown every 5 exchanges
         log_dir="Demo_Logs",
     )
