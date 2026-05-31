@@ -1,41 +1,55 @@
-# 💾 常駐型AI対話ログ自動記録システム (Realtime Logger)
+# 💾 汎用型 AI 対話ログフレームワーク (Universal Dialogue Logger)
 
-## 📌 プロジェクト概要
-ユーザーとAIとのインタラクションログをリアルタイムでキャプチャし、一時バッファ（JSON）経由でリレーショナルデータベース（SQLite）へ永続化、かつ規定件数（10件）ごとにMarkdownフォーマットの美しいドキュメントとして自動フラッシュ（出力）するバックグラウンド常駐型監視システムです。
+<h2 id="日本語">🇯🇵 日本語</h2>
 
-Windowsのスタートアップ時にVBScript（Windows Script Host）を介して非表示（Silent）の常駐監視スレッドを自動起動する仕組みを構築しており、OS起動からシャットダウンまでユーザーの操作を妨げることなく対話メモリの収集を自動化します。
+### 📖 プロジェクト概要 (Overview)
+あらゆる AI アプリケーション（OpenAI、Gemini、Claude、Discord Bot、カスタム LLM パイプラインなど）に統合可能な**イベント駆動型対話ログフレームワーク**です。
 
----
+外部スケジューラやポーリングループを一切使用せず、AI が応答を返した**その瞬間**に SQLite へ直接書き込む設計により、データの欠損を原理的に排除しています。さらに、設定可能な閾値（デフォルト: 10件）に到達すると、自動的に美しい Markdown トランスクリプトを生成・出力します。
 
-## 🛠️ 技術スタック
-- **Language**: Python 3, VBScript (WSH)
-- **Database**: SQLite 3 (永続化ストレージ)
-- **Key Technology**: 
-  - バッファフラッシュ・アルゴリズム (JSON Buffering → DB Transaction)
-  - VBScriptによるWindowsバックグラウンド常駐プロセス（Wscript.Shell）の隠し起動
-  - Markdown構造化テキストジェネレータ
+Python 標準ライブラリのみで動作し、外部依存は一切ありません。
 
----
+### 🛠️ 技術スタック (Tech Stack)
+- **言語**: Python 3
+- **データベース**: SQLite 3 (ACID トランザクション保証)
+- **コア技術**: イベント駆動アーキテクチャ、アトミックトランザクション、自動 Markdown エクスポート
 
-## 📂 コンポーネント構成
+### 📂 アーキテクチャ (Architecture)
 
-1. **`db_init.py` (データベース・初期化)**:
-   - システムに必要なSQLiteデータベース（`system_memory.db`）および対話履歴テーブルを定義し、初期セットアップを行います。
-2. **`push_log.py` (ログバッファング＆フラッシュ)**:
-   - 1対話ごとのログをJSONファイル（`temp_log_buffer.json`）に一時バッファし、バッファ制限（10件）に到達した瞬間に自動的にトランザクションをコミットしてSQLiteにインサート。同時に、Markdown形式のフォーマットされた記録ファイルに整形出力します。
-3. **`sys_heartbeat.py` (常駐型監視監視エンジン)**:
-   - バックグラウンドでシステムの状態をリアルタイム監視するメイン・デーモンスレッドです。
-4. **`start_heartbeat.vbs` (サイレントブート起動)**:
-   - Windows起動時にコマンドプロンプトのコンソール画面を一切表示させずに、裏側で `sys_heartbeat.py` をサイレント起動・常駐化させるためのVBScriptです。
-5. **`db_query.py` / `format_log.py` (ログ抽出＆フォーマッタ)**:
-   - データベースに蓄積された非構造化データを抽出し、読みやすいログ構造に組み立て直すクエリとフォーマッタです。
+```
+04_Realtime_Logger/
+├── universal_logger.py   # DialogueLogger クラス (DB 操作 + Markdown 生成)
+├── demo_usage.py         # 統合デモスクリプト
+└── README.md
+```
 
----
+#### `universal_logger.py` — 統合 Logger クラス
+- **`DialogueLogger` クラス**: 初期化時に SQLite データベースとテーブルを自動作成。
+- **`log_exchange()` メソッド**: ユーザーメッセージと AI レスポンスを単一のアトミックトランザクションで書き込み。`os.remove()` やバッファファイルは一切使用しない安全設計。
+- **`export_to_markdown()` メソッド**: セッション単位で対話履歴を構造化 Markdown として出力。月別サブディレクトリに自動整理。
+- **`query_session()` メソッド**: 特定セッションの全対話を辞書リストとして取得。
+- **閾値ベースの自動フラッシュ**: `log_exchange()` 内部で自動カウントし、閾値到達時に Markdown エクスポートを自動トリガー。
 
-## 💡 システムアーキテクチャの利点
-- **データロスの防止**: メモリバッファとSQLite永続化を組み合わせることで、万が一のPCの強制終了やクラッシュが発生しても、対話記録が失われない耐障害性を備えています。
-- **ゼロオーバーヘッド**: VBScriptによるサイレント起動により、コマンドプロンプトのポップアップ等によるユーザー体験の阻害を完全にゼロにしています。
-- **データレイクの構築**: AIとの全対話を構造化データとしてローカルDBに蓄積し続けることで、将来的な独自RAG（検索拡張生成）システムやパーソナルAIアシスタントの学習用データセットとして直接再利用可能なパイプラインを形成しています。
+### 🚀 クイックスタート (Quick Start)
+```python
+from universal_logger import DialogueLogger
+
+# 初期化（DB が存在しなければ自動作成）
+logger = DialogueLogger(db_path="memory.db", auto_flush_threshold=10)
+
+# AI が応答を返した瞬間に 1 行で記録
+logger.log_exchange("session_001", "こんにちは", "こんにちは！", engine="Gemini")
+
+# セッションの全対話を取得
+data = logger.query_session("session_001")
+
+# 手動で Markdown エクスポート
+logger.export_to_markdown("session_001")
+```
+
+### ⚠️ 既知の制限事項 (Known Limitations)
+1. **単一プロセス設計**: SQLite は同時書き込み（Write-Ahead Logging 非使用時）に制約があるため、複数プロセスからの同時書き込みには対応していません。
+2. **ローカル専用**: クラウドデータベース（PostgreSQL 等）との統合は本フレームワークのスコープ外です。
 
 <br>
 <br>
@@ -43,41 +57,114 @@ Windowsのスタートアップ時にVBScript（Windows Script Host）を介し�
 ---
 ---
 
-# 💾 Daemon-Based Dialogue Logging System (Realtime Logger)
+# 💾 Universal AI Dialogue Logger Framework
 
-## 📌 Project Overview
-A background daemon system that automatically captures dialogue history between a user and AI in real-time. It buffers interactions via a temporary JSON file, persists them to a relational database (SQLite), and automatically flushes the logs to beautifully structured Markdown records once a threshold (10 entries) is reached.
+<h2 id="english">🇺🇸 English</h2>
 
-The daemon launches silently at Windows startup via VBScript (Windows Script Host) without displaying cmd console windows, automating conversation archival unobtrusively.
+### 📖 Project Overview
+An **event-driven dialogue logging framework** designed to integrate with any AI application — OpenAI, Gemini, Claude, Discord Bots, or custom LLM pipelines.
+
+Instead of relying on external schedulers or polling loops, this framework writes directly to SQLite **the instant** the AI produces a response, eliminating data loss by design. When a configurable threshold (default: 10 exchanges) is reached, it automatically generates and exports a beautifully structured Markdown transcript.
+
+Runs entirely on the Python standard library with zero external dependencies.
+
+### 🛠️ Tech Stack
+- **Language**: Python 3
+- **Database**: SQLite 3 (ACID transaction guarantee)
+- **Core Technology**: Event-Driven Architecture, Atomic Transactions, Auto Markdown Export
+
+### 📂 Architecture
+
+```
+04_Realtime_Logger/
+├── universal_logger.py   # DialogueLogger class (DB ops + Markdown generation)
+├── demo_usage.py         # Integration demo script
+└── README.md
+```
+
+#### `universal_logger.py` — Unified Logger Class
+- **`DialogueLogger` class**: Auto-creates the SQLite database and schema on initialization.
+- **`log_exchange()` method**: Writes both user message and AI response in a single atomic transaction. No `os.remove()`, no buffer files — safe by design.
+- **`export_to_markdown()` method**: Exports session dialogue history as structured Markdown, auto-organized into monthly subdirectories.
+- **`query_session()` method**: Retrieves all exchanges for a given session as a list of dictionaries.
+- **Threshold-based auto-flush**: Internally counts exchanges within `log_exchange()` and automatically triggers Markdown export when the threshold is reached.
+
+### 🚀 Quick Start
+```python
+from universal_logger import DialogueLogger
+
+# Initialize (auto-creates DB if not exists)
+logger = DialogueLogger(db_path="memory.db", auto_flush_threshold=10)
+
+# Record an exchange the instant the AI responds — one line
+logger.log_exchange("session_001", "Hello!", "Hi there!", engine="GPT-4")
+
+# Query all exchanges for a session
+data = logger.query_session("session_001")
+
+# Manually export to Markdown
+logger.export_to_markdown("session_001")
+```
+
+### ⚠️ Known Limitations
+1. **Single-process design**: SQLite has write concurrency constraints (without WAL mode), so simultaneous writes from multiple processes are not supported.
+2. **Local-only**: Integration with cloud databases (PostgreSQL, etc.) is outside the scope of this framework.
+
+<br>
+<br>
 
 ---
-
-## 🛠️ Tech Stack
-- **Language**: Python 3, VBScript (WSH)
-- **Database**: SQLite 3 (Persistent Storage)
-- **Core Technology**:
-  - Buffer Flush Algorithm (JSON Buffering → DB Transaction)
-  - Silent process execution using VBScript (`Wscript.Shell`)
-  - Markdown structured text generator
-
 ---
 
-## 📂 Component Structure
+# 💾 通用型 AI 對話紀錄框架
 
-1. **`db_init.py` (Database Initializer)**:
-   - Sets up the SQLite database schema (`system_memory.db`) and initializes tables.
-2. **`push_log.py` (Log Buffer & SQLite Commit)**:
-   - Stages dialogue entries to `temp_log_buffer.json` and pushes records to SQLite via a single transaction once the threshold (10 exchanges) is reached, trigger-calling the Markdown parser.
-3. **`sys_heartbeat.py` (Heartbeat Monitor Daemon)**:
-   - The main monitoring background thread checking state conditions periodically.
-4. **`start_heartbeat.vbs` (Silent WSH Bootloader)**:
-   - A WSH VBScript triggering `sys_heartbeat.py` silently on Windows startup without opening any terminal command prompts.
-5. **`db_query.py` / `format_log.py` (Query & Markdown Parser)**:
-   - Utility tools to query the SQLite DB and export structured dialogue segments into readable Markdown documents.
+<h2 id="繁體中文">🇹🇼 繁體中文</h2>
 
----
+### 📖 專案簡介 (Overview)
+一個**事件驅動式的對話紀錄框架**，可與任何 AI 應用程式整合 — 包括 OpenAI、Gemini、Claude、Discord Bot 或自訂 LLM 管線。
 
-## 💡 System Architectural Advantages
-- **Fault-Tolerant (No Data Loss)**: By combining atomic JSON buffers with SQLite transactions, data is preserved even in the event of unexpected power losses or system crashes.
-- **Zero-Interruption (Zero Overhead)**: The VBScript integration eliminates console window popups, ensuring a seamless user environment.
-- **Future-Proof Data Lake**: Accumulates structural conversational records locally, forming a database ready for RAG pipelines or personalized model training.
+不使用任何外部排程器或輪詢迴圈，而是在 AI 產生回應的**那一瞬間**直接寫入 SQLite，從設計層面消除資料遺失的可能性。當可設定的閾值（預設：10 筆）達到時，自動生成並匯出格式精美的 Markdown 逐字稿。
+
+完全基於 Python 標準函式庫，零外部依賴。
+
+### 🛠️ 技術棧 (Tech Stack)
+- **語言**: Python 3
+- **資料庫**: SQLite 3 (ACID 交易保證)
+- **核心技術**: 事件驅動架構、原子交易、自動 Markdown 匯出
+
+### 📂 架構 (Architecture)
+
+```
+04_Realtime_Logger/
+├── universal_logger.py   # DialogueLogger 類別 (資料庫操作 + Markdown 生成)
+├── demo_usage.py         # 整合示範腳本
+└── README.md
+```
+
+#### `universal_logger.py` — 統合 Logger 類別
+- **`DialogueLogger` 類別**：初始化時自動建立 SQLite 資料庫與資料表結構。
+- **`log_exchange()` 方法**：以單一原子交易 (Atomic Transaction) 同時寫入使用者訊息與 AI 回應。不使用 `os.remove()`，不使用暫存檔案 — 從設計層面保障安全。
+- **`export_to_markdown()` 方法**：以會話為單位，將對話歷史匯出為結構化 Markdown，自動依月份歸檔。
+- **`query_session()` 方法**：將指定會話的所有對話以字典列表形式取回。
+- **閾值式自動排版**：在 `log_exchange()` 內部自動計數，達到閾值時自動觸發 Markdown 匯出。
+
+### 🚀 快速開始 (Quick Start)
+```python
+from universal_logger import DialogueLogger
+
+# 初始化（資料庫不存在時自動建立）
+logger = DialogueLogger(db_path="memory.db", auto_flush_threshold=10)
+
+# AI 回應的瞬間，一行搞定紀錄
+logger.log_exchange("session_001", "你好", "你好！", engine="Gemini")
+
+# 查詢會話的所有對話
+data = logger.query_session("session_001")
+
+# 手動匯出 Markdown
+logger.export_to_markdown("session_001")
+```
+
+### ⚠️ 已知限制 (Known Limitations)
+1. **單一進程設計**：SQLite 在未啟用 WAL 模式時，不支援多進程同時寫入。
+2. **僅限本地端**：與雲端資料庫（PostgreSQL 等）的整合不在本框架的範圍內。
