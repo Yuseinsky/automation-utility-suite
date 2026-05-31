@@ -11,7 +11,7 @@
 | :--- | :--- | :--- | :--- |
 | [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **古書デジタルアーカイブ修復パイプライン** | Python, 正規表現 (YAML), モジュール式設計 | 設定駆動型のモジュール式パイプラインで、画像マッピング・テキスト統合・ページ順ソート・ノイズ除去を一括自動化 |
 | [02_Log_Parser](./02_Log_Parser) | **AI会話ログ自動フォーマッター** | Python, 正規表現 (YAML), Markdown | WebUIの乱雑な対話ログを、ハードコーディングなしでクリーンなMarkdownへ再構築・解析 |
-| [03_Media_Controller](./03_Media_Controller) | **OS低レベルAPIメディア制御** | Python, Windows API (`user32.dll`) | 物理キーを使わずに、プログラム経由で音楽の再生・スキップを制御 |
+| [03_Media_Controller](./03_Media_Controller) | **OS低レベルAPIメディア制御** | Python, Windows API (`user32.dll`), argparse | 辞書マッピング＋クロスプラットフォーム防御により、CLI一発でOS低レベルメディアキーを送信する統合型ツール |
 | [04_Realtime_Logger](./04_Realtime_Logger) | **常駐型対話ログ自動記録** | Python, SQLite, JSON, VBScript | バックグラウンド常駐で対話をJSONに蓄積し、SQLiteへ自動永続化＆MD書き出し |
 | [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
@@ -57,7 +57,7 @@ This repository compiles **8 practical tools developed through AI-collaborative 
 | :--- | :--- | :--- | :--- |
 | [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **Legacy Archive Digitization Pipeline** | Python, RegEx (YAML), Modular Design | Config-driven modular pipeline automating image mapping, text consolidation, page sorting, and noise removal. |
 | [02_Log_Parser](./02_Log_Parser) | **AI Conversation Log Formatter** | Python, RegEx (YAML), Markdown | Reformats messy web AI logs into clean Markdown with auto-summaries using zero-hardcoded YAML rules. |
-| [03_Media_Controller](./03_Media_Controller) | **OS Low-Level API Media Control** | Python, Windows API (`user32.dll`) | Simulates media play, pause, and skip commands programmatically without hardware keys. |
+| [03_Media_Controller](./03_Media_Controller) | **OS Low-Level API Media Control** | Python, Windows API (`user32.dll`), argparse | Unified CLI tool using dictionary mapping and cross-platform defense to send OS-level media key signals. |
 | [04_Realtime_Logger](./04_Realtime_Logger) | **Daemon-Based Real-time Logger** | Python, SQLite, JSON, VBScript | Runs silently in the background, buffering logs to JSON and persisting to SQLite/Markdown. |
 | [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
