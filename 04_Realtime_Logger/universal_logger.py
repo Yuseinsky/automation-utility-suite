@@ -17,8 +17,7 @@ Usage:
 """
 import sqlite3
 import os
-import shutil
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -26,9 +25,6 @@ from datetime import datetime, timezone, timedelta
 DEFAULT_DB_NAME = "dialogue_memory.db"
 DEFAULT_FLUSH_THRESHOLD = 10
 DEFAULT_LOG_DIR = "Formatted_Logs"
-DEFAULT_ARCHIVE_DIR = "Archive"
-
-JST = timezone(timedelta(hours=9))
 
 
 class DialogueLogger:
@@ -53,7 +49,6 @@ class DialogueLogger:
         db_path: str = DEFAULT_DB_NAME,
         auto_flush_threshold: int = DEFAULT_FLUSH_THRESHOLD,
         log_dir: str = DEFAULT_LOG_DIR,
-        archive_dir: str = DEFAULT_ARCHIVE_DIR,
     ):
         """Initialize the logger and ensure the database schema exists.
 
@@ -61,12 +56,12 @@ class DialogueLogger:
             db_path: Path to the SQLite database file.
             auto_flush_threshold: Number of exchanges before auto-export.
             log_dir: Directory for Markdown transcript output.
-            archive_dir: Directory for archived JSON snapshots.
         """
         self.db_path = db_path
         self.auto_flush_threshold = auto_flush_threshold
         self.log_dir = log_dir
-        self.archive_dir = archive_dir
+        
+        self._session_counters = {}
 
         self._init_db()
 
@@ -131,8 +126,13 @@ class DialogueLogger:
         Returns:
             The sequence number assigned to this exchange.
         """
-        seq = self._get_session_count(session_id) + 1
-        ts = datetime.now(JST).isoformat()
+        if session_id not in self._session_counters:
+            self._session_counters[session_id] = self._get_session_count(session_id)
+            
+        self._session_counters[session_id] += 1
+        seq = self._session_counters[session_id]
+        
+        ts = datetime.now().astimezone().isoformat()
 
         conn = sqlite3.connect(self.db_path)
         try:
@@ -198,7 +198,7 @@ class DialogueLogger:
         # Build Markdown content
         lines = [
             f"# Dialogue Log: {session_id}",
-            f"**Exported At**: {datetime.now(JST).isoformat()}",
+            f"**Exported At**: {datetime.now().astimezone().isoformat()}",
             f"**Total Exchanges**: {rows[-1][0]}",
             "",
             "---",
@@ -221,7 +221,7 @@ class DialogueLogger:
         lines.append("> *(Export completed by DialogueLogger)*")
 
         # Write to file
-        now = datetime.now(JST)
+        now = datetime.now().astimezone()
         month_dir = os.path.join(self.log_dir, now.strftime("%Y-%m"))
         os.makedirs(month_dir, exist_ok=True)
 
