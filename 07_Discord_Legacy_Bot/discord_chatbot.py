@@ -202,13 +202,13 @@ async def perform_archive(message, chat, channel_id, is_auto=False):
         os.makedirs(archive_dir, exist_ok=True)
         os.makedirs(raw_dir, exist_ok=True)
 
-        # Write summary
-        summary_file = os.path.join(archive_dir, f"Summary_{timestamp}.md")
+        # [MAMA-FIX] Include channel_id in filename to prevent multi-channel collision
+        summary_file = os.path.join(archive_dir, f"Summary_{channel_id}_{timestamp}.md")
         with open(summary_file, "w", encoding="utf-8") as f:
             f.write(summary_text)
 
-        # Write raw log transcript
-        raw_file = os.path.join(raw_dir, f"Raw_Transcript_{timestamp}.md")
+        # [MAMA-FIX] Include channel_id in filename to prevent multi-channel collision
+        raw_file = os.path.join(raw_dir, f"Raw_Transcript_{channel_id}_{timestamp}.md")
         raw_transcript = f"# Raw Chat Transcript\n*   **Archived At:** {timestamp}\n\n---\n\n"
         for msg in chat.history:
             speaker = "User" if msg.role == 'user' else "Assistant"
