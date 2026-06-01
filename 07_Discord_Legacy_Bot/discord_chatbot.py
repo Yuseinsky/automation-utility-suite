@@ -61,6 +61,9 @@ MAX_CHUNKS = 5
 # [P1-10] Backlog memory leak prevention
 MAX_BACKLOG = 15
 
+# [MAMA-FIX] Image size limit to prevent OOM Image Bomb (5MB)
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
+
 # Auto archive threshold (number of history entries)
 AUTO_ARCHIVE_THRESHOLD = 80  # 1 user + 1 assistant = 2; 80 = 40 exchanges
 
@@ -345,6 +348,15 @@ async def on_message(message):
                 if message.attachments:
                     attachment = message.attachments[0]
                     if attachment.content_type and attachment.content_type.startswith('image'):
+                        # [MAMA-FIX] OOM Image Bomb protection: reject files > 5MB
+                        if attachment.size and attachment.size > MAX_IMAGE_BYTES:
+                            size_mb = attachment.size / (1024 * 1024)
+                            await message.channel.send(
+                                f"⚠️ Image too large ({size_mb:.1f}MB). "
+                                f"Maximum allowed: {MAX_IMAGE_BYTES // (1024*1024)}MB."
+                            )
+                            _audit_log(message.author, "IMAGE_REJECTED", f"Size: {size_mb:.1f}MB")
+                            return
                         await message.channel.send("✨ [System] Processing uploaded image...")
                         image_bytes = await attachment.read()
 
