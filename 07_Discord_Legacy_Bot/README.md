@@ -1,20 +1,52 @@
 # 💬 多機能・多模態対応AIチャットボットシステム (Discord Chatbot Bot)
 
 ## 📌 プロジェクト概要
-Discord 上で動作し、Google Gemini API（`gemini-2.5-pro`）と連携することで、独自定義されたシステム指示書（System Prompt）に基づいた対話エージェントシステムです。
+Discord 上で動作し、Google Gemini API（`gemini-2.5-pro`）と連携する対話エージェントシステムです。
 
-単なる一問一答のボットではなく、会話の流れを正確に記憶する「短期記憶（コンテキストセッション）管理」、対話が蓄積した際に日記やログとして自動/手動でディスクに書き出す「自動アーカイブ（メモリ結晶化）システム」、周囲の会話状況を察知して不要な処理を抑える「バックログ（コンテキストキュー）システム」など、実用性の高い高度な機能を搭載しています。
+単なる一問一答のボットではなく、会話の流れを正確に記憶する「短期記憶（コンテキストセッション）管理」、対話が蓄積した際にディスクに自動/手動で書き出す「自動アーカイブ（メモリ結晶化）システム」、周囲の会話状況を察知して不要な処理を抑える「バックログ（コンテキストキュー）システム」など、実用性の高い高度な機能を搭載しています。
 
 ---
 
 ## 🛠️ 技術スタック
-- **Language**: Python 3
+- **Language**: Python 3.9+
 - **Framework**: `discord.py` (v2.x, Client / event-driven)
-- **AI Engine**: Google Gemini API (`gemini-2.5-pro` / 多模態モデル)
-- **Key Technology**: 
-  - メッセージキャプチャ＆バックログキュー
-  - Discord 添付ファイル（Attachments）のバイナリパース＆多模態（画像＋テキスト）送信
-  - 非同期タスク処理による長文スライス＆送信
+- **AI Engine**: Google Gemini API (`gemini-2.5-pro` / Multimodal)
+- **Key Technology**:
+  - Non-blocking async I/O (`send_message_async` / `asyncio.to_thread`)
+  - Per-channel `asyncio.Lock()` for concurrent state protection
+  - Multi-encoding file reader with 3-tier fallback
+  - Rate-limited message chunking with hard page limits
+  - Memory Consolidation with Context Seed injection
+
+---
+
+## ⚡ Quick Start
+
+### 1. Install Dependencies
+```bash
+pip install discord.py google-generativeai python-dotenv
+# Optional (recommended): pip install charset-normalizer
+```
+
+### 2. Set Environment Variables (or .env file)
+```bash
+# Required
+DISCORD_TOKEN="your_discord_bot_token"
+GEMINI_API_KEY="your_gemini_api_key"
+
+# Recommended
+ADMIN_USER_ID="your_discord_user_id"
+
+# Optional
+ALLOWED_CHANNEL_ID="0"  # 0 = all channels
+```
+
+> ⚠️ **Critical**: `ADMIN_USER_ID` must be set to a Discord User ID (numeric). If left as 0, admin-only features will be disabled.
+
+### 3. Run
+```bash
+python discord_chatbot.py
+```
 
 ---
 
@@ -22,25 +54,48 @@ Discord 上で動作し、Google Gemini API（`gemini-2.5-pro`）と連携する
 
 ### 1. 🧠 キャラクター性（ペルソナ）と動的変化
 - 独自のシステムプロンプト（`system_instruction.txt`）を読み込み、完全な対話キャラクターとして機能。
-- 相手（管理者、一般ユーザー等）に応じて応答の優先度やコンテキスト取得を動的に調整可能。
+- 多段エンコーディング検出により、非UTF-8の指示書もクラッシュせず読み込み可能。
 
-### 2. 💎 記憶のアーカイブ＆リセットシステム
-- AIとの対話履歴が規定値（80回）に達するか、管理者から `!archive` コマンドを受け取ると、過去のチャットログを要約・テキスト化。
-- 要約された「ダイジェスト（.md）」と「客観的なRAWログ原稿（.md）」をローカルディスクに自動保存。
-- 会話メモリをリセットしつつ、要約データのみを次の会話セッションの「初期シード（Context Seed）」として大脳に再注入することで、トークンの爆発を防ぎながら長期的な文脈を維持します。
+### 2. 💎 記憶のアーカイブ＆リセットシステム (Memory Consolidation)
+- 対話履歴が規定値（80回）に達するか、管理者から `!archive` コマンドを受け取ると自動/手動でアーカイブ。
+- 要約「ダイジェスト（.md）」と「RAWログ原稿（.md）」をローカルディスクに非同期保存。
+- 要約データを次のセッションの「Context Seed」として再注入し、トークン爆発を防ぎながら長期文脈を維持。
+- **Death Loop Prevention**: Context Seed 注入失敗時も、セッションを必ずリセットし、無限アーカイブループを防止。
 
 ### 3. 👂 周囲の会話の学習（コンテキスト・バックログ）機能
-- 特定のチャンネルで自分宛て（Bot宛て）でない周囲の会話が交わされている間、APIリクエストを送らずに裏でバックログキューにテキストを一時プール。
-- 自分宛てに呼びかけられたタイミングで、プールしていたバックログをコンテキスト情報としてまとめてGeminiに投入し、「それまでの会話の流れを全て理解した上での割り込み返答」を実現します。
+- Bot宛てでない会話をバックログキューにプール（上限: 15件）。
+- 呼びかけ時にプール済みの文脈を一括注入し、「空気を読む」返答を実現。
+- メモリリーク防止のため、`MAX_BACKLOG` でキューサイズを強制制限。
 
 ### 4. 🖼️ 画像認識（多模態）対応
-- Discordにアップロードされた画像ファイルをバイナリデータとしてストリーム直読し、Gemini APIの多モーダルインターフェースに渡すことで、画像のディテールや意味解析を含めた高度な回答を可能にしています。
+- 画像のみ（テキストなし）のメッセージにも正しく応答。
+- Discord添付ファイルをバイナリストリームとしてGemini APIに直接送信。
 
 ---
 
-## 💡 本システムのエンジニアリング価値
-このシステムは、**「LLMのコンテキスト制限（Token上限・コスト）と対話体験のトレードオフ」**に対する実用的なソリューションを示しています。
-不要なAPIコールを抑えるバックログ蓄積、対話履歴を自動で要約・結晶化してメモリをスッキリさせる仕組みなど、プロダクションレベルの対話エージェントを構築する上で不可欠な設計パターン（Memory Management / Memory Consolidation）が組み込まれています。
+## 🛡️ セキュリティ設計 (Defense in Depth)
+
+| 防御層 | 機構 | 対象脅威 |
+|---|---|---|
+| **管理者認証** | `ADMIN_USER_ID` (数値ID, 偽造不可) | ユーザー名偽装によるなりすまし |
+| **非同期API呼出** | `await chat.send_message_async()` | Event Loop凍結・心拍断線 |
+| **チャネルロック** | per-channel `asyncio.Lock()` | 並行メッセージによる履歴汚染 |
+| **非同期ファイルI/O** | `asyncio.to_thread()` | ディスクI/Oによるボット凍結 |
+| **レート制限保護** | `MAX_CHUNKS` ハードリミット | Discord 429 Rate Limit |
+| **バックログ制限** | `MAX_BACKLOG` (15件) | メモリリーク / OOM |
+| **Death Loop防止** | seed失敗時も強制セッションリセット | 無限アーカイブループ |
+| **多段エンコーディング** | UTF-8 → charset_normalizer → chardet → replace | 起動時エンコーディングクラッシュ |
+| **環境変数隔離** | `os.environ.get()` + `.env` | リポジトリ上のトークン漏洩 |
+| **パス秘匿** | アーカイブ通知にファイル名のみ表示 | ディレクトリ構造の漏洩 |
+| **監査ログ** | `[AUDIT]` 形式のターミナル記録 | フォレンジック追跡 |
+
+---
+
+## ⚠️ Known Limitations
+
+1. **Single-process Architecture**: メモリ内のセッションとバックログはプロセス再起動で消失します。
+2. **Image-only Multimodal**: テキスト添付ファイル（.txt, .pdf等）はサポートされていません。
+3. **Keyword Trigger Sensitivity**: `bot`, `assistant`, `system` などのキーワードが含まれるメッセージは全て応答トリガーとなります。
 
 <br>
 <br>
@@ -51,42 +106,61 @@ Discord 上で動作し、Google Gemini API（`gemini-2.5-pro`）と連携する
 # 💬 Multimodal Conversational Agent System (Discord Chatbot)
 
 ## 📌 Project Overview
-An advanced Discord dialogue agent integrated with the Google Gemini API (`gemini-2.5-pro`) to conduct conversations based on a custom-defined system instruction file (`system_instruction.txt`).
-
-Far from a simple reply-on-trigger bot, this agent incorporates state-of-the-art conversational mechanisms: dynamic session memory management, dialogue memory crystallization (summarizing and archiving active history to local Markdown documents once a threshold of 80 entries is hit or upon receiving `!archive`), and background conversation context queuing (backlogging background chat to reply with contextual awareness when addressed).
+An advanced Discord dialogue agent integrated with Google Gemini API (`gemini-2.5-pro`) featuring intelligent session memory, automated conversation archival, ambient context queuing, and multimodal image recognition.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Language**: Python 3
+- **Language**: Python 3.9+
 - **Framework**: `discord.py` (v2.x, Client / Event-driven)
-- **AI Engine**: Google Gemini API (`gemini-2.5-pro` Multimodal Model)
+- **AI Engine**: Google Gemini API (`gemini-2.5-pro` Multimodal)
 - **Core Technology**:
-  - Chat logs queue / context backlog processor.
-  - Multimodal parser handling image attachments (read as binary streams).
-  - Asynchronous task runner for text-chunking and pagination.
+  - Non-blocking async I/O (`send_message_async` / `asyncio.to_thread`)
+  - Per-channel concurrency locks (`asyncio.Lock`)
+  - Multi-encoding file reader with 3-tier fallback
+  - Rate-limited chunked output with hard page limits
+  - Memory Consolidation with Context Seed injection
 
 ---
 
 ## ⚙️ Key Features & Architecture
 
 ### 1. 🧠 Custom Persona Alignment
-- Loads custom persona settings from `system_instruction.txt` to align the bot's behavior.
-- Dynamically adjusts priorities and dialogue context depending on the conversational participants.
+- Loads persona from `system_instruction.txt` with multi-encoding fallback.
 
 ### 2. 💎 Memory Consolidation & Archival
-- Once history reaches 80 records, or upon receiving the `!archive` command, the bot generates a summary of the active session.
-- Saves both the finalized Markdown Summary and raw conversation transcript to the local storage disk.
-- Flushes the session memory and seeds the new chat instance with the generated summary as a "Context Seed" to preserve continuity without causing prompt-token inflation.
+- Auto-archives at 80 history entries (or via `!archive` command).
+- Dual-track output: Markdown Summary + Raw Transcript.
+- Seeds new sessions with summary for context continuity.
+- **Death Loop Prevention**: Session always resets even if seed fails.
 
 ### 3. 👂 Context Backlog Queue
-- Monitors and stores ambient conversation logs in a background queue when not addressed directly.
-- When pinged or replied to, it injects the queued backlog as conversation context, enabling the bot to respond with full contextual awareness of the preceding conversation flow.
+- Pools ambient conversation (max 15 entries) without API calls.
+- Injects pooled context when addressed for contextual awareness.
 
 ### 4. 🖼️ Multimodal Capabilities
-- Intercepts image attachments, reads them as binary byte streams, and inputs them alongside user prompts to Gemini to analyze and discuss visual details.
+- Responds to image-only messages (no text required).
+- Binary stream image input to Gemini API.
 
 ---
 
-## 💡 Engineering Value & Architectural Patterns
-This bot demonstrates a practical solution to **managing the trade-offs of LLM context window boundaries and token pricing**. By implementing smart ambient backlogs and automated memory crystallization (summarization cycles), it showcases key software design patterns (Memory Consolidation / State Persistence) required for production-level AI agent architectures.
+## 🛡️ Security & Performance (Defense in Depth)
+
+| Layer | Mechanism | Threat Mitigated |
+|---|---|---|
+| **Admin Auth** | `ADMIN_USER_ID` (immutable numeric ID) | Username spoofing |
+| **Async API** | `await chat.send_message_async()` | Event Loop freeze / heartbeat disconnect |
+| **Channel Locks** | Per-channel `asyncio.Lock()` | Concurrent history corruption |
+| **Async File I/O** | `asyncio.to_thread()` | Disk I/O bot freeze |
+| **Rate Limit Guard** | `MAX_CHUNKS` hard limit | Discord 429 Rate Limit |
+| **Backlog Limit** | `MAX_BACKLOG` (15 entries) | Memory leak / OOM |
+| **Death Loop Guard** | Force session reset on seed failure | Infinite archive loop |
+| **Multi-Encoding** | UTF-8 → charset_normalizer → chardet → replace | Startup encoding crash |
+| **Secret Isolation** | `os.environ.get()` + `.env` | Token leakage |
+| **Path Concealment** | Archive notifications show filename only | Directory structure exposure |
+| **Audit Trail** | `[AUDIT]` structured terminal logging | Forensic tracing |
+
+---
+
+## 💡 Engineering Value
+This bot demonstrates practical solutions to **managing LLM context window boundaries and token pricing trade-offs**. The Memory Consolidation pattern (summarize → archive → seed) implements an Infinite Context Sliding Window, while the Ambient Backlog Queue enables context-aware responses without wasteful API calls. Combined with Defense in Depth security (channel locks, async I/O, rate limiting), it showcases production-grade AI agent architecture.

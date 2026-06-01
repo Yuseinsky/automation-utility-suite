@@ -196,9 +196,12 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
             color=0xff0000
         )
     else:
+        # [MAMA-FIX] Never expose raw exception to Discord.
+        # Log details to terminal for admin debugging.
+        print(f"[ERROR] Unhandled command error: {type(error).__name__}: {error}")
         embed = discord.Embed(
             title="🚨 Bridge Error",
-            description=f"An unexpected error occurred:\n```\n{str(error)[:3800]}\n```",
+            description="An unexpected error occurred. Please check the server terminal logs for details.",
             color=0xff0000
         )
 
@@ -324,9 +327,11 @@ async def read_file(interaction: discord.Interaction, file_path: str):
             embed_color, "❌ File Not Found"
         )
     except Exception as e:
+        # [MAMA-FIX] Log raw error to terminal, send sanitized message to Discord
+        _audit_log(interaction.user, "READ_ERROR", target_path, f"{type(e).__name__}: {e}")
         await chunk_and_send(
             interaction,
-            f"System error reading file:\n{e}",
+            "A system error occurred while reading the file. Check server logs for details.",
             embed_color, "❌ System Error"
         )
 
@@ -389,9 +394,11 @@ async def write_file(interaction: discord.Interaction, file_path: str, content: 
             f"💾 File write success: {os.path.basename(target_path)[:200]}"
         )
     except Exception as e:
+        # [MAMA-FIX] Log raw error to terminal, send sanitized message to Discord
+        _audit_log(interaction.user, "WRITE_ERROR", target_path, f"{type(e).__name__}: {e}")
         await chunk_and_send(
             interaction,
-            f"Error writing file:\n{e}",
+            "A system error occurred while writing the file. Check server logs for details.",
             embed_color, "❌ File Write Error"
         )
 
@@ -429,19 +436,22 @@ async def chat(interaction: discord.Interaction, message: str):
             
         await chunk_and_send(interaction, response.text, embed_color, "💬 Assistant Response")
     except Exception as e:
+        # [MAMA-FIX] Log raw error to terminal, send sanitized hint to Discord
         error_text = str(e)
-        # Provide more helpful error messages for common API errors
+        _audit_log(interaction.user, "CHAT_ERROR", detail=f"{type(e).__name__}: {error_text[:500]}")
+
+        # Provide helpful hints WITHOUT exposing raw exception text
         if "400" in error_text or "invalid" in error_text.lower():
-            hint = "\n\n💡 **Hint**: This may be caused by an invalid API key or token limit exceeded. Try `/clear` to reset the session."
+            hint = "This may be caused by a token limit exceeded. Try `/clear` to reset the session."
         elif "429" in error_text or "quota" in error_text.lower():
-            hint = "\n\n💡 **Hint**: API quota exceeded. Please wait or check your billing settings."
+            hint = "API quota exceeded. Please wait or check your billing settings."
         elif "403" in error_text:
-            hint = "\n\n💡 **Hint**: API access denied. Please verify your GEMINI_API_KEY."
+            hint = "API access denied. Please verify your configuration."
         else:
-            hint = ""
+            hint = "An unexpected error occurred. Check the server terminal logs for details."
         await chunk_and_send(
             interaction,
-            f"API communication error:\n```\n{error_text[:3500]}\n```{hint}",
+            f"❌ {hint}",
             embed_color, "❌ Connection Error"
         )
 
