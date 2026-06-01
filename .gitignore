@@ -9,6 +9,8 @@ __pycache__/
 temp_log_buffer.json
 temp_reply.json
 conversation_buffer.json
+Memory_Archives/
+Raw_Transcripts/
 
 # Environment variables & Private configuration
 .env

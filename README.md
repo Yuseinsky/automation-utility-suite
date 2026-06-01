@@ -13,10 +13,10 @@
 | [02_Log_Parser](./02_Log_Parser) | **AI会話ログ自動フォーマッター** | Python, 正規表現 (YAML), Markdown | WebUIの乱雑な対話ログを、ハードコーディングなしでクリーンなMarkdownへ再構築・解析 |
 | [03_Media_Controller](./03_Media_Controller) | **OS低レベルAPIメディア制御** | Python, Windows API (`user32.dll`), argparse | 辞書マッピング＋クロスプラットフォーム防御により、CLI一発でOS低レベルメディアキーを送信する統合型ツール |
 | [04_Realtime_Logger](./04_Realtime_Logger) | **汎用型AI対話ログフレームワーク** | Python, SQLite 3 (ACID) | イベント駆動型アーキテクチャでAI対話をSQLiteに即時永続化し、自動Markdownエクスポート |
-| [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
-| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
-| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能多模態対話エージェント** | discord.py, Gemini API (マルチモーダル) | 人格（ペルソナ）フィルタ、短期記憶結晶化、察言観色バックログ搭載のBot |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム** | Python, SQLite, argparse | IDEアーキテクチャ変更で失われたAI対話脈絡をデータベースから抽出し復旧する防御的ツール |
+| [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング (V3.0)** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
+| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ (V4.0)** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
+| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能多模態対話エージェント (V4.0)** | discord.py, Gemini API (マルチモーダル) | 人格（ペルソナ）フィルタ、短期記憶結晶化、察言観色バックログ搭載のBot |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム (V2.0)** | Python, SQLite, argparse | IDEアーキテクチャ変更で失われたAI対話脈絡をデータベースから抽出し復旧する防御的ツール |
 
 ---
 
@@ -59,10 +59,10 @@ This repository compiles **8 practical tools developed through AI-collaborative 
 | [02_Log_Parser](./02_Log_Parser) | **AI Conversation Log Formatter** | Python, RegEx (YAML), Markdown | Reformats messy web AI logs into clean Markdown with auto-summaries using zero-hardcoded YAML rules. |
 | [03_Media_Controller](./03_Media_Controller) | **OS Low-Level API Media Control** | Python, Windows API (`user32.dll`), argparse | Unified CLI tool using dictionary mapping and cross-platform defense to send OS-level media key signals. |
 | [04_Realtime_Logger](./04_Realtime_Logger) | **Universal AI Dialogue Logger** | Python, SQLite 3 (ACID) | Event-driven framework for instant SQLite persistence and automatic Markdown transcript export. |
-| [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
-| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
-| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery** | Python, SQLite, argparse | Recovers and injects lost AI conversation contexts caused by IDE storage architecture shifts. |
+| [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner (V3.0)** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
+| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge (V4.0)** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
+| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent (V4.0)** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V2.0)** | Python, SQLite, argparse | Recovers and injects lost AI conversation contexts caused by IDE storage architecture shifts. |
 
 ---
 
