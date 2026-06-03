@@ -20,6 +20,8 @@ Google の **Antigravity IDE**（Geminiエコシステムの開発ツール）�
 - **Database**: SQLite 3 (ファイルベース、サーバー不要)
 - **CLI**: `argparse` (コマンドライン引数解析)
 - **Key Technology**:
+  - SQLite FTS5 (Full-Text Search)
+  - JSONL Log Parsing & Extraction
   - Read-only DB connection (URI mode: `?mode=ro`)
   - Context Manager による安全な接続管理
   - SQL LIKE Wildcard Escape (萬用字元注入防護)
@@ -68,6 +70,18 @@ python context_retriever.py --query "encoding" --export results.md
 python context_retriever.py --recent 100 --limit 200
 ```
 
+### 3. Recover from IDE logs (New in V4.0) / IDEログからの復元
+
+**Scan IDE brain for sessions / セッションのスキャン：**
+```bash
+python context_retriever.py --scan-ide
+```
+
+**Recover specific session / 特定セッションの復元：**
+```bash
+python context_retriever.py --recover-ide "session-uuid" --export recovery.md
+```
+
 ---
 
 ## ⚙️ 主な特徴
@@ -87,8 +101,8 @@ CLIベースの検索インターフェースにより、キーワード検索�
 
 ```
 08_Dialogue_Context_Retriever/
-├── db_initializer.py      # Database schema initializer (V2.0)
-├── context_retriever.py   # CLI search & context restoration tool (V2.0)
+├── db_initializer.py      # Database schema initializer
+├── context_retriever.py   # CLI search, FTS5 & IDE log restoration tool (V4.0)
 ├── README.md              # This file
 └── dialogue_history.db    # (Generated locally, git-ignored)
 ```
@@ -160,15 +174,16 @@ Born from a production incident on May 20, 2026 when Google's Antigravity IDE fo
 - **Language**: Python 3.9+
 - **Database**: SQLite 3 (file-based, serverless)
 - **CLI**: `argparse`
-- **Core Technology**: Read-only DB, Context Manager, Wildcard Escape, Parameterized Queries, Performance Indexes
+- **Core Technology**: SQLite FTS5, JSONL parsing, Read-only DB, Context Manager, Wildcard Escape, Parameterized Queries, Performance Indexes
 
 ---
 
 ## ⚙️ Key Features
 1. **Real-time Persistence** — Zero data loss via immediate SQLite writes
-2. **Precise Retrieval** — Keyword, session, and chronological search
-3. **LLM-ready Output** — Markdown-formatted results for direct prompt injection
-4. **File Export** — `--export` for direct Markdown file output
+2. **High-Performance Search** — Keyword, FTS5 semantic search, and chronological filtering
+3. **IDE Log Rescue** — Direct parsing of IDE `transcript.jsonl` files to salvage lost states
+4. **LLM-ready Output** — Markdown-formatted results for direct prompt injection
+5. **File Export** — `--export` for direct Markdown file output
 
 ---
 

@@ -62,7 +62,7 @@ This repository compiles **8 practical tools developed through AI-collaborative 
 | [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner (V3.0)** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge (V4.0)** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
 | [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent (V4.0)** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V2.0)** | Python, SQLite, argparse | Recovers and injects lost AI conversation contexts caused by IDE storage architecture shifts. |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V4.0)** | Python, SQLite FTS5, argparse | Advanced IDE log parser and high-performance FTS5 search to seamlessly rescue AI dialogues. |
 
 ---
 

@@ -65,7 +65,7 @@ def create_database():
     # ------------------------------------------------
     # Schema: dialogues table (V2.0)
     # ------------------------------------------------
-    # [P1-2] Added NOT NULL DEFAULT constraints to
+    # Added NOT NULL DEFAULT constraints to
     # seq_number and engine to prevent NULL sorting
     # inconsistencies.
     # ------------------------------------------------
@@ -82,7 +82,7 @@ def create_database():
     ''')
 
     # ------------------------------------------------
-    # [P1-1] Performance Indexes
+    # Performance Indexes
     # ------------------------------------------------
     # idx_session: Accelerates WHERE session_id LIKE ?
     # idx_timestamp: Accelerates ORDER BY timestamp DESC
