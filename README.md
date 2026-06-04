@@ -16,7 +16,7 @@
 | [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング (V3.0)** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ (V4.0)** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
 | [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能多模態対話エージェント (V4.0)** | discord.py, Gemini API (マルチモーダル) | 人格（ペルソナ）フィルタ、短期記憶結晶化、察言観色バックログ搭載のBot |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム (V4.0)** | Python, SQLite FTS5, argparse | IDEのJSONLログ解析と高性能FTS5検索により失われたAI対話脈絡をシームレスに復旧する防御的ツール |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム (V5.0)** | Python, SQLite, Adapter Pattern | IDEログ解析の抽象化(Adapter)とFTS5検索により、失われたAI対話脈絡を復旧し、Prompt Injectionを防ぐ防御的ツール |
 
 ---
 
@@ -62,7 +62,7 @@ This repository compiles **8 practical tools developed through AI-collaborative 
 | [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner (V3.0)** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
 | [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge (V4.0)** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
 | [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent (V4.0)** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V4.0)** | Python, SQLite FTS5, argparse | Advanced IDE log parser and high-performance FTS5 search to seamlessly rescue AI dialogues. |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V5.0)** | Python, SQLite, Adapter Pattern | Abstracted IDE log parser (Adapter) and FTS5 search to rescue AI dialogues while neutralizing Prompt Injection risks. |
 
 ---
 
