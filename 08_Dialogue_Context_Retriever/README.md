@@ -22,6 +22,8 @@ Google の **Antigravity IDE**（Geminiエコシステムの開発ツール）�
 - **Key Technology**:
   - SQLite FTS5 (Full-Text Search)
   - JSONL Log Parsing & Extraction
+  - Adapter Design Pattern (V5.0)
+  - Prompt Injection Defense (V5.0)
   - Read-only DB connection (URI mode: `?mode=ro`)
   - Context Manager による安全な接続管理
   - SQL LIKE Wildcard Escape (萬用字元注入防護)
@@ -95,6 +97,12 @@ CLIベースの検索インターフェースにより、キーワード検索�
 ### 3. 📤 LLM注入用の出力
 検索結果はMarkdown形式で出力され、新規対話のプロンプトに直接注入できます。`--export` で直接ファイルに書き出すことも可能です。
 
+### 4. 🧩 アーキテクチャの進化 (V5.0)
+Adapter パターンを導入し、IDE のログ形式変更に柔軟に対応可能に。また、プロンプトの「指示（Instruction）」と「データ（Data）」を分離し、Prompt Injection リスクを無効化しました。
+
+### 5. 🚀 Future Work: RAG & 記憶階層化 (Memory Layering)
+将来的な「Token 爆発問題」を見据え、`ChromaDB` や `sqlite-vss` 等のベクトルデータベースと連携した「セマンティック検索（RAG）」の導入を計画中。全てを「保存」し、必要なものだけを「取得」するメモリ階層アーキテクチャへの進化を視野に入れています。
+
 ---
 
 ## 📂 File Structure / ファイル構成
@@ -133,6 +141,7 @@ CLIベースの検索インターフェースにより、キーワード検索�
 |---|---|---|
 | **パラメータ化クエリ** | `cursor.execute(sql, params)` | SQL Injection |
 | **ワイルドカードエスケープ** | `_escape_like()` + `ESCAPE '\\'` | LIKE Wildcard Injection (検索汚染) |
+| **プロンプト構造の分離 (V5.0)** | Header と Instruction の厳密な分離 | Prompt Injection (データによる指示の汚染) |
 | **読み取り専用接続** | `?mode=ro` URI mode | 意図しない書き込み / DBロック競合 |
 | **Context Manager** | `try...finally: conn.close()` | 接続リソースリーク |
 | **パフォーマンスインデックス** | `idx_session`, `idx_timestamp` | 大量データ時の全表スキャン |
@@ -174,7 +183,7 @@ Born from a production incident on May 20, 2026 when Google's Antigravity IDE fo
 - **Language**: Python 3.9+
 - **Database**: SQLite 3 (file-based, serverless)
 - **CLI**: `argparse`
-- **Core Technology**: SQLite FTS5, JSONL parsing, Read-only DB, Context Manager, Wildcard Escape, Parameterized Queries, Performance Indexes
+- **Core Technology**: SQLite FTS5, Adapter Pattern (V5.0), Prompt Injection Defense (V5.0), Read-only DB, Context Manager, Parameterized Queries, Performance Indexes
 
 ---
 
@@ -184,6 +193,9 @@ Born from a production incident on May 20, 2026 when Google's Antigravity IDE fo
 3. **IDE Log Rescue** — Direct parsing of IDE `transcript.jsonl` files to salvage lost states
 4. **LLM-ready Output** — Markdown-formatted results for direct prompt injection
 5. **File Export** — `--export` for direct Markdown file output
+6. **Adapter Architecture (V5.0)** — Dependency inversion via `TranscriptAdapter` for robust parsing of evolving log structures
+7. **Prompt Defense (V5.0)** — Strict separation of instruction and data to neutralize Prompt Injection vectors
+8. **🚀 Future Work: Memory Layering & RAG** — Planned migration to vector databases (`ChromaDB` / `sqlite-vss`) for semantic retrieval, solving the LLM Token Explosion limit while retaining 100% of the long-term memory
 
 ---
 
@@ -193,6 +205,7 @@ Born from a production incident on May 20, 2026 when Google's Antigravity IDE fo
 |---|---|---|
 | **Parameterized Queries** | `cursor.execute(sql, params)` | SQL Injection |
 | **Wildcard Escape** | `_escape_like()` + `ESCAPE '\\'` | LIKE Wildcard Injection |
+| **Prompt Separation (V5.0)** | Strict Header/Instruction separation | Prompt Injection (Data corrupting Instruction) |
 | **Read-only Connection** | `?mode=ro` URI mode | Unintended writes / DB lock conflicts |
 | **Context Manager** | `try...finally: conn.close()` | Connection resource leak |
 | **Performance Indexes** | `idx_session`, `idx_timestamp` | Full table scan on large datasets |
