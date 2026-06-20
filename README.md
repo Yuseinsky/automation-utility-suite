@@ -1,42 +1,52 @@
-# 🛠️ PENG WEIMING's AI-Collaborative Automation Suite (AI協調型・業務自動化ツール集)
+# 🛠️ PENG WEIMING — 実務課題から生まれたIT自動化プロジェクト集
 
-こんにちは、PENG WEIMING の技術ポートフォリオへようこそ。
-本リポジトリは、日頃の業務における「手作業だと面倒な課題」を解決するため、**AIアシスタントとの協調開発（AI-Assisted Development）を通じて構築した8つの実践的自動化ツール群**をまとめたコードベースです。
+このリポジトリは、私がITへのキャリアチェンジを進めるなかで、日常業務の「面倒だけど誰も手をつけない課題」を解決するために作った8つのツールをまとめたものです。
+コーディングにはAIツール（Antigravity IDE, Claude, Gemini）の力を借りていますが、すべてのプロジェクトは、私自身が現場で直面した具体的な課題から出発しています。
 
 ---
 
-## 📂 収録プロジェクト一覧
+## 📂 プロジェクト一覧
 
-| フォルダ名 | プロジェクト名 | 使用技術 / スタック | 解決する課題 / 概要 |
+| フォルダ名 | プロジェクト名 | 使用技術 | きっかけと概要 |
 | :--- | :--- | :--- | :--- |
-| [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **古書デジタルアーカイブ修復パイプライン** | Python, 正規表現 (YAML), モジュール式設計 | 設定駆動型のモジュール式パイプラインで、画像マッピング・テキスト統合・ページ順ソート・ノイズ除去を一括自動化 |
-| [02_Log_Parser](./02_Log_Parser) | **AI会話ログ自動フォーマッター** | Python, 正規表現 (YAML), Markdown | WebUIの乱雑な対話ログを、ハードコーディングなしでクリーンなMarkdownへ再構築・解析 |
-| [03_Media_Controller](./03_Media_Controller) | **OS低レベルAPIメディア制御** | Python, Windows API (`user32.dll`), argparse | 辞書マッピング＋クロスプラットフォーム防御により、CLI一発でOS低レベルメディアキーを送信する統合型ツール |
-| [04_Realtime_Logger](./04_Realtime_Logger) | **汎用型AI対話ログフレームワーク** | Python, SQLite 3 (ACID) | イベント駆動型アーキテクチャでAI対話をSQLiteに即時永続化し、自動Markdownエクスポート |
-| [05_Job_Cleaner](./05_Job_Cleaner) | **求人データスクレイピング (V3.0)** | BeautifulSoup4, Requests, Regex | コピペした求人テキストやHTMLから広告や不要UIパーツを自動除去してMD保存 |
-| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモートブリッジ (V4.0)** | discord.py, Gemini API, OS I/O | 外出先からDiscordを叩いて自宅PCのファイルを安全に読み書き・遠隔操作 |
-| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能多模態対話エージェント (V4.0)** | discord.py, Gemini API (マルチモーダル) | 人格（ペルソナ）フィルタ、短期記憶結晶化、察言観色バックログ搭載のBot |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元システム (V5.0)** | Python, SQLite, Adapter Pattern | IDEログ解析の抽象化(Adapter)とFTS5検索により、失われたAI対話脈絡を復旧し、Prompt Injectionを防ぐ防御的ツール |
+| [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **古書デジタルアーカイブ修復パイプライン** | Python, RegEx, YAML | 古い紙資料のデジタル化作業で、画像の紐付けやテキスト統合を手作業で行う限界を感じ、一括自動化するパイプラインを構築 |
+| [02_Log_Parser](./02_Log_Parser) | **AI会話ログフォーマッター** | Python, RegEx, Markdown | WebUIの対話ログが乱雑で読み返せなかったため、自動でクリーンなMarkdownに整形するツールを作成 |
+| [03_Media_Controller](./03_Media_Controller) | **OSメディアキー制御ツール** | Python, Windows API, argparse | CLIから一発でメディア操作をしたかったため、OSのAPIを直接叩く統合ツールを作成 |
+| [04_Realtime_Logger](./04_Realtime_Logger) | **AI対話リアルタイム記録ツール** | Python, SQLite | AI対話の内容がセッション終了後に消えてしまう問題を防ぐため、リアルタイムでDBに永続化する仕組みを構築 |
+| [05_Job_Cleaner](./05_Job_Cleaner) | **求人テキストクリーナー** | Python, BeautifulSoup4, Requests | 求人サイトからコピーしたテキストが広告やUI部品だらけで読めなかったため、自動除去ツールを作成 |
+| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PCリモート操作ブリッジ** | Python, discord.py, Gemini API | 外出先から自宅PCのファイルに安全にアクセスする必要があり、Discordを経由したリモート操作ツールを構築 |
+| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **多機能対話Botエージェント** | Python, discord.py, Gemini API | 人格フィルタと対話記憶を持つ、より人間らしいチャットBotを作りたかったため開発 |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **対話コンテキスト復元ツール** | Python, SQLite | IDEの更新でAI対話履歴がすべて消失。大切な対話脈絡を取り戻すために、ログ解析と全文検索で復旧するツールを開発 |
 
 ---
 
-## 💡 開発における基本理念（設計思想）
+## 💡 設計原則
 
-本リポジトリに収録されているすべてのスクリプトは、以下の理念に基づいて設計されています。
+すべてのプロジェクトは、以下の4つの原則に基づいています：
 
-1. **データ完全性の保証 (No Data Loss)**
-   - クリーニングや処理を行う際は、必ず原本（Raw data）の自動バックアップを作成し、予期せぬ破壊や情報欠損を防止します。
-2. **安全性の重視 (Security First)**
-   - APIキーやアクセストークンなどの機密情報は、コード内にハードコードせず、必ず環境変数または `.env` 経由で動的に注入する設計に徹底されています。
-3. **無駄なAPIコールの削減 (Resource Efficiency)**
-   - バックログキューを用いた賢い割り込み処理（察言観色システム）や、対話メモリの結晶化（要約圧縮）により、LLMに対する不要なリクエストとトークンコストを最小限に抑えています。
-4. **現場優先の問題解決 (Pragmatism)**
-   - 学術的な難しさを追求するのではなく、「実際に目の前にある業務課題や不便さ」を解決するための最短ルートをRPA的に具現化しています。
+- 処理前に、必ず元データのバックアップを取る。
+- APIキーや認証情報をコード内にハードコードしない。
+- 不要なAPIコールを最小限に抑える。
+- 学術的な正しさより、目の前の業務課題を解決することを優先する。
+
+---
+
+## 👨‍💻 私の貢献
+
+本リポジトリのコーディングは、AIツール（Antigravity IDE, Claude, Gemini）の支援を受けています。
+私の貢献は、以下の4つに集中しています：
+
+- 業務上のボトルネックやシステム障害を正確に特定すること。
+- 課題をAIが実行可能な明確な仕様に翻訳すること。
+- AIが生成したコードを繰り返しテストすること。
+- 各ツールが元の課題を安全かつ確実に解決しているかを検証すること。
+
+このプロセスは、私が現場監督や顧客対応で培った「複雑な状況を整理し、解決可能な手順に翻訳する力」のIT領域への応用です。
 
 ---
 
 ## 🚀 動作環境とセットアップ
-各ツールの詳細な使用方法やパラメータ設計については、各サブディレクトリ内の `README.md` をご参照ください。
+各ツールの詳細な使用方法は、各サブディレクトリ内の `README.md` をご参照ください。
 
 <br>
 <br>
@@ -44,42 +54,51 @@
 ---
 ---
 
-# 🛠️ PENG WEIMING's AI-Collaborative Automation Suite
+# 🛠️ PENG WEIMING — IT Projects Built from Real Problems
 
-Welcome to the technical portfolio of PENG WEIMING.
-This repository compiles **8 practical tools developed through AI-collaborative engineering to automate tedious daily tasks and facilitate workflow efficiency** using Python, OS APIs, and AI integrations.
+This repository documents my transition into IT through practical projects built to solve real operational problems. While AI tools (Antigravity IDE, Claude, Gemini) assisted with implementation, each project originated from a real workflow challenge that I identified, designed, tested, and refined.
 
 ---
 
 ## 📂 Project Directory
 
-| Directory | Project Name | Tech Stack | Overview / Problem Solved |
+| Directory | Project Name | Tech Stack | Why I Built It |
 | :--- | :--- | :--- | :--- |
-| [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **Legacy Archive Digitization Pipeline** | Python, RegEx (YAML), Modular Design | Config-driven modular pipeline automating image mapping, text consolidation, page sorting, and noise removal. |
-| [02_Log_Parser](./02_Log_Parser) | **AI Conversation Log Formatter** | Python, RegEx (YAML), Markdown | Reformats messy web AI logs into clean Markdown with auto-summaries using zero-hardcoded YAML rules. |
-| [03_Media_Controller](./03_Media_Controller) | **OS Low-Level API Media Control** | Python, Windows API (`user32.dll`), argparse | Unified CLI tool using dictionary mapping and cross-platform defense to send OS-level media key signals. |
-| [04_Realtime_Logger](./04_Realtime_Logger) | **Universal AI Dialogue Logger** | Python, SQLite 3 (ACID) | Event-driven framework for instant SQLite persistence and automatic Markdown transcript export. |
-| [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner (V3.0)** | BeautifulSoup4, Requests, RegEx | Automatically extracts job details and filters out advertisements/junk HTML formats to Markdown. |
-| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge (V4.0)** | discord.py, Gemini API, OS I/O | Accesses, reads, and writes local PC files securely through Discord slash commands from anywhere. |
-| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent (V4.0)** | discord.py, Gemini API (Multimodal) | A chatbot featuring persona filters, dialogue memory crystallization, and smart backlog context. |
-| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery (V5.0)** | Python, SQLite, Adapter Pattern | Abstracted IDE log parser (Adapter) and FTS5 search to rescue AI dialogues while neutralizing Prompt Injection risks. |
+| [01_Legacy_Archive_Digitization_Pipeline](./01_Legacy_Archive_Digitization_Pipeline) | **Legacy Archive Digitization Pipeline** | Python, RegEx, YAML | Digitizing old paper archives involved tedious manual image mapping and text consolidation. I built a pipeline to automate the entire process. |
+| [02_Log_Parser](./02_Log_Parser) | **AI Conversation Log Formatter** | Python, RegEx, Markdown | AI conversation logs from WebUI were messy and unreadable. I built a tool to automatically reformat them into clean Markdown. |
+| [03_Media_Controller](./03_Media_Controller) | **OS Media Key Control Tool** | Python, Windows API, argparse | I wanted one-command media control from CLI, so I built a tool that sends OS-level media key signals directly. |
+| [04_Realtime_Logger](./04_Realtime_Logger) | **AI Dialogue Realtime Logger** | Python, SQLite | AI conversations would disappear after sessions ended. I built a system to persist them to a database in real-time. |
+| [05_Job_Cleaner](./05_Job_Cleaner) | **Job Description Text Cleaner** | Python, BeautifulSoup4, Requests | Job postings copied from websites were cluttered with ads and UI junk. I built a cleaner to extract only the useful content. |
+| [06_Discord_Bridge](./06_Discord_Bridge) | **Discord-PC Remote Bridge** | Python, discord.py, Gemini API | I needed secure access to my home PC files while away. I built a remote bridge using Discord as the interface. |
+| [07_Discord_Legacy_Bot](./07_Discord_Legacy_Bot) | **Multimodal Conversational Agent** | Python, discord.py, Gemini API | I wanted a chatbot with personality and conversation memory, so I built one with persona filters and dialogue summarization. |
+| [08_Dialogue_Context_Retriever](./08_Dialogue_Context_Retriever) | **Dialogue Context Recovery Tool** | Python, SQLite | An IDE update wiped all my AI conversation history. I built a recovery tool using log parsing and full-text search to rescue the lost context. |
 
 ---
 
-## 💡 Engineering Core Principles (Design Philosophy)
+## 💡 Design Principles
 
-All scripts included in this repository are designed with the following engineering core values:
+Every project follows four principles:
 
-1. **Data Integrity Guarantee (No Data Loss)**
-   - Prior to any destructive format modifications or cleanups, original source data (Raw data) is automatically backed up to prevent unexpected data loss.
-2. **Security-First Approach (Security First)**
-   - Under no circumstances are credentials, API keys, or access tokens hardcoded in the scripts. All authentications are dynamically loaded via environment variables or `.env` configurations.
-3. **Optimized Resource Consumption (Resource Efficiency)**
-   - Smart background queues and context memory crystallization (summarization compressions) are used to minimize unnecessary API calls and token consumption.
-4. **Pragmatic Problem Solving (Pragmatism)**
-   - Focuses on resolving immediate operational bottlenecks and automating daily routines through efficient scripting rather than over-engineering.
+- Protect original data before any modification.
+- Never hardcode credentials or API keys.
+- Minimize unnecessary API calls.
+- Solve practical workflow problems first.
+
+---
+
+## 👨‍💻 My Contribution
+
+The code in this repository was implemented with assistance from AI tools (Antigravity IDE, Claude, Gemini).
+My contribution focused on:
+
+- Defining the operational problem.
+- Translating requirements into clear specifications.
+- Iteratively testing AI-generated implementations.
+- Validating whether each solution solved the original problem safely and reliably.
+
+This workflow is a direct application of my core strength — coordinating complex situations, bridging communication gaps, and delivering practical solutions — now applied to IT.
 
 ---
 
 ## 🚀 Environment and Setup
-For detailed setup instructions and usage details for each tool, please refer to the `README.md` file in their respective subdirectories.
+For detailed setup instructions for each tool, please refer to the `README.md` in their respective subdirectories.
