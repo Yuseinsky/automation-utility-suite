@@ -105,4 +105,4 @@ This workflow reflects skills I developed through previous experience in project
 ## 🚀 Environment and Setup
 For detailed setup instructions for each tool, please refer to the `README.md` in their respective subdirectories.
 
-This repository documents my ongoing learning journey into IT Support through practical projects that solve real-world problems.
+This repository documents my learning journey into IT Support through practical projects that solve real-world problems.
