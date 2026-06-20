@@ -48,7 +48,7 @@
 ## 🚀 動作環境とセットアップ
 各ツールの詳細な使用方法は、各サブディレクトリ内の `README.md` をご参照ください。
 
-本リポジトリは、IT Supportへの転職を進めるなかでの学びの記録です。現場で新たな課題に出会うたびに、プロジェクトを追加していく予定です。
+本リポジトリは、IT Supportへの転職を通じた学びの記録です。実務の課題を解決するなかで生まれたプロジェクトを、今後も追加していきます。
 
 <br>
 <br>
@@ -105,4 +105,4 @@ This workflow reflects skills I developed through previous experience in project
 ## 🚀 Environment and Setup
 For detailed setup instructions for each tool, please refer to the `README.md` in their respective subdirectories.
 
-This repository documents my ongoing learning journey as I transition into IT Support, and new projects will be added as I continue solving real-world problems.
+This repository documents my ongoing learning journey into IT Support through practical projects that solve real-world problems.
