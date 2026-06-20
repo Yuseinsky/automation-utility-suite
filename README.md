@@ -37,16 +37,18 @@
 私の貢献は、以下の4つに集中しています：
 
 - 業務上のボトルネックやシステム障害を正確に特定すること。
-- 課題をAIが実行可能な明確な仕様に翻訳すること。
+- 現場の課題を、AIが実装可能な明確な仕様に翻訳すること。
 - AIが生成したコードを繰り返しテストすること。
 - 各ツールが元の課題を安全かつ確実に解決しているかを検証すること。
 
-このプロセスは、私が現場監督や顧客対応で培った「複雑な状況を整理し、解決可能な手順に翻訳する力」のIT領域への応用です。
+このプロセスは、私が現場監督や顧客対応を通じて身につけた「複雑な状況を整理し、解決可能な手順に翻訳する力」を、IT領域で活かす試みです。
 
 ---
 
 ## 🚀 動作環境とセットアップ
 各ツールの詳細な使用方法は、各サブディレクトリ内の `README.md` をご参照ください。
+
+本リポジトリは、IT Supportへのキャリアチェンジを進めるなかで、引き続き成長していく予定です。
 
 <br>
 <br>
@@ -56,7 +58,7 @@
 
 # 🛠️ PENG WEIMING — IT Projects Built from Real Problems
 
-This repository documents my transition into IT through practical projects built to solve real operational problems. While AI tools (Antigravity IDE, Claude, Gemini) assisted with implementation, each project originated from a real workflow challenge that I identified, designed, tested, and refined.
+This repository documents my transition into IT through practical projects built to solve real operational problems. While AI tools (Antigravity IDE, Claude, Gemini) assisted with implementation, each project originated from a real workflow challenge that I identified, defined, tested, and refined.
 
 ---
 
@@ -92,13 +94,15 @@ The code in this repository was implemented with assistance from AI tools (Antig
 My contribution focused on:
 
 - Defining the operational problem.
-- Translating requirements into clear specifications.
+- Translating practical problems into clear specifications for AI-assisted implementation.
 - Iteratively testing AI-generated implementations.
 - Validating whether each solution solved the original problem safely and reliably.
 
-This workflow is a direct application of my core strength — coordinating complex situations, bridging communication gaps, and delivering practical solutions — now applied to IT.
+This workflow reflects skills I developed through previous experience in project coordination and customer support, and I am now applying those same problem-solving approaches to IT.
 
 ---
 
 ## 🚀 Environment and Setup
 For detailed setup instructions for each tool, please refer to the `README.md` in their respective subdirectories.
+
+This repository will continue to grow as I develop new skills through my transition into IT Support.
